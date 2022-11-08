@@ -8,8 +8,6 @@ using Pkg
 # Pkg.add("LinearAlgebra")
 # Pkg.add("Tables")
 
-cd("/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial")
-
 using DifferentialEquations
 using CSV
 using DataFrames
@@ -17,12 +15,12 @@ using Distributions
 using LinearAlgebra
 using Tables
 
-idx = 2
-parameters = [10,20,30,40,50,60,70,80]
-myparam = parameters[idx + 1]
+#cd("/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/code")
 
-dist_df = DataFrame(CSV.File("/Users/katherinedixon/Documents/StuffINeed/_Research/_DFTM_2021/Field_2021/_data/coord_distances_R3.csv"))
-ll_df = DataFrame(CSV.File("/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/_data/data_for_ll.csv"))
+dist_df = DataFrame(CSV.File("../data/coord_distances_R3.csv"))
+ll_df = DataFrame(CSV.File("../data/data_for_ll.csv"))
+
+ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
 
 function twostrain_SEIR(du,u,p,t)
     μ1, μ2, δ1, δ2, k1, k2, C1, C2, alpha = p
@@ -95,6 +93,18 @@ function get_tree_sp(prob_doug, n)
     wsample(["DO","GR"],[prob_doug, 1 - prob_doug],n)
 end
 
+function place_tree_sp(n_do, n)
+    if n_do >= 1
+        tree_nums = sample(1:n,n_do, replace = false)
+        tree_arr = repeat(["GR"],outer = 37)
+        tree_arr[tree_nums] .= "DO"
+    else
+        tree_arr = repeat(["GR"],outer = 37)
+    end
+    return tree_arr
+end
+
+
 function countmemb(itr)
     d = Dict{eltype(itr), Int}()
     for val in itr
@@ -155,10 +165,10 @@ eps_val = 0.1
 ν_MNPV_DO = 0.1
 ν_MNPV_GR = 0.1
 
-# C_SNPV_DO = 3.7
-# C_SNPV_GR = 3.7
-# C_MNPV_DO = 2.5
-# C_MNPV_GR = 3.3
+C_SNPV_DO = 3.7
+C_SNPV_GR = 3.7
+C_MNPV_DO = 2.5
+C_MNPV_GR = 3.3
 
 # C_SNPV_DO = 3.38 # model 3 no tree species
 # C_SNPV_GR = 3.38 # model 3 no tree species
@@ -332,72 +342,10 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
     all_long = outerjoin(all_long, tree_dat, on = :variable)
 
     all_long.rep .= rep
-
-    do_index = findall(x -> x =="DO", tree_vals)
-    gr_index = findall(x -> x =="GR", tree_vals)
-
-    do_snpv = frac_pop1[do_index,:]
-    gr_snpv = frac_pop1[gr_index,:]
-
-    do_mnpv = frac_pop2[do_index,:]
-    gr_mnpv = frac_pop2[gr_index,:]
-
-    total_frac = frac_pop1 + frac_pop2
-    total_frac_means = mean(total_frac,dims = 1)
-
-    f10_index = findall(x -> x >= 0.1, total_frac_means[1,:])
-    f30_index = findall(x -> x >= 0.3, total_frac_means[1,:])
-    fl10_index = findall(x -> x < 0.1, total_frac_means[1,:])
-
-    s10 = mean(frac_pop1[:,f10_index])
-    m10 = mean(frac_pop2[:,f10_index])
-
-    s30 = mean(frac_pop1[:,f30_index])
-    m30 = mean(frac_pop2[:,f30_index])
-
-    sl10 = mean(frac_pop1[:,fl10_index])
-    ml10 = mean(frac_pop2[:,fl10_index])
-
-    ds10 = mean(do_snpv[:,f10_index])
-    dm10 = mean(do_mnpv[:,f10_index])
-    gs10 = mean(gr_snpv[:,f10_index])
-    gm10 = mean(gr_mnpv[:,f10_index])
-
-    ds30 = mean(do_snpv[:,f30_index])
-    dm30 = mean(do_mnpv[:,f30_index])
-    gs30 = mean(gr_snpv[:,f30_index])
-    gm30 = mean(gr_mnpv[:,f30_index])
-
-    dsl10 = mean(do_snpv[:,fl10_index])
-    dml10 = mean(do_mnpv[:,fl10_index])
-    gsl10 = mean(gr_snpv[:,fl10_index])
-    gml10 = mean(gr_mnpv[:,fl10_index])
-
-    means_list = [ds10,dm10,gs10,gm10,ds30,dm30,gs30,gm30,dsl10,dml10,gsl10,gml10,s10,m10,s30,m30,sl10,ml10]
-    filter_list = [">=10%",">=10%",">=10%",">=10%",">=30%",">=30%",">=30%",">=30%","<10%","<10%","<10%","<10%",">=10%",">=10%",">=30%",">=30%","<10%","<10%"]
-    tree_list = ["DF","DF","GR","GR","DF","DF","GR","GR","DF","DF","GR","GR","both","both","both","both","both","both"]
-    morph_list = ["SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV","SNPV","MNPV"]
-
-    summary_df = DataFrame(mean = means_list, tree = tree_list, morph = morph_list, filter = filter_list)
-    S_df = DataFrame(sp = ["S","SNPV","MNPV"], mean = [mean(S_pop),mean(Z1_pop), mean(Z2_pop)],
-    mean_last = [mean(S_pop[:,(gen-50):gen]), mean(Z1_pop[:,(gen-50):gen]), mean(Z2_pop[:,(gen-50):gen])],
-    max_last = [maximum(S_pop[:,(gen-50):gen]), maximum(Z1_pop[:,(gen-50):gen]), maximum(Z2_pop[:,(gen-50):gen])],
-    min_last = [minimum(S_pop[:,(gen-50):gen]), minimum(Z1_pop[:,(gen-50):gen]), minimum(Z2_pop[:,(gen-50):gen])],
-     max = [maximum(S_pop),maximum(Z1_pop), maximum(Z2_pop)],
-      min = [minimum(S_pop),minimum(Z1_pop), minimum(Z2_pop)],
-      init = [initS[1],initSNPV[1], initMNPV[1]])
-    S_df.sS .= si
-    S_df.sM .= sr
-    S_df.rep .= rep
-    S_df.pdoug .= pdoug
-    S_df.rho .= rho
-    S_df.phi .= phi1
-
-    summary_df.sS .= si
-    summary_df.sM .= sr
-    summary_df.rep .= rep
-    summary_df.pdoug .= pdoug
-    summary_df.rho .= rho
+    all_long.sS .= si
+    all_long.sM .= sr
+    all_long.alpha .= alpha
+    all_long.pdoug .= pdoug
 
     total_frac = frac_pop1 + frac_pop2
     total_frac_means = mean(total_frac,dims = 1)
@@ -410,7 +358,6 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
 
     f10_index = findall(x -> x >= 0.1, total_frac_means[1,:])
     f30_index = findall(x -> x >= 0.3, total_frac_means[1,:])
-    fl10_index = findall(x -> x < 0.1, total_frac_means[1,:])
 
     s10 = mean(snpv_frac[:,f10_index])
     m10 = mean(mnpv_frac[:,f10_index])
@@ -449,7 +396,7 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
         extinct_MNPV = 0
     end
 
-    small_df = ll_df
+    small_df = filter(:n_trees => ==(pdoug), ll_df)
 
     probs_df = DataFrame()
     for i in 1:length(small_df.id)
@@ -479,21 +426,21 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
     probs_df.extinct_S .= extinct_SNPV
     probs_df.extinct_M .= extinct_MNPV
 
-    return summary_df, S_df, all_long, probs_df
+    return all_long, probs_df
 
 end
 
 
 b_test = [1]
-sr_test = [4]
-si_test = [13.75]
-ndoug = 18
+sr_test = [3,8,15]
+si_test = [20]
+pd_test = [0,18,37]
 phi_test = [35]
 #phi2_test = 20
 r_test = [0.2]
 gamma_test = [0.2]
 sigma = 0
-alpha_test = [0.5]
+alpha_test = [0.1,0.5,0.9]
 #is_test = 0.01:0.05:2
 
 ll_sim_data = DataFrame()
@@ -504,16 +451,18 @@ all_data = DataFrame()
 for srt in sr_test
     for sit in si_test
         for gm in gamma_test
-            for phi in phi_test
+            for pd in pd_test
                 for alph in alpha_test
-                    for rp in 1:10
+                    for rp in 1:1
+
+                        ndoug = pd
 
                         tree_vals = place_tree_sp(ndoug,number_of_pops)
 
                         sr = srt
                         si = sit
-                        phi_S = phi
-                        phi_M = phi
+                        phi_S = phi_test[1]
+                        phi_M = phi_test[1]
                         r = r_test[1]
                         bi = b_test[1]
                         br = b_test[1]
@@ -523,10 +472,8 @@ for srt in sr_test
 
                         output_sim = run_simulation(0.2,ndoug, eps_val,200,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,alpha,sigma,bi,br,gamma,r)
 
-                        summary_data = vcat(summary_data,output_sim[1])
-                        info_data = vcat(info_data,output_sim[2])
-                        all_data = vcat(all_data,output_sim[3])
-                        ll_sim_data = vcat(ll_sim_data,output_sim[4])
+                        all_data = vcat(all_data,output_sim[1])
+                        ll_sim_data = vcat(ll_sim_data,output_sim[2])
 
 
 
@@ -538,16 +485,13 @@ for srt in sr_test
     end #sit
 end #srt
 
-
 ll_sim_data
 gd = groupby(ll_sim_data, [:sS, :sM,:id,:FI_filter])
 ll_df_new = combine(gd, :LL => mean, :MNPV_prop => mean, :extinct_S => sum, :extinct_M => sum)
 
 dir = "output_init_test/"
 
-sim_info = "alpha"*string(myparam)*".csv"
+sim_info = "alpha"*string(1)*".csv"
 #sim_info = "douglas_test.csv"
-CSV.write(dir*"summary_"*sim_info, summary_data, header = true)
-CSV.write(dir*"info_"*sim_info, info_data, header = true)
 CSV.write(dir*"all_"*sim_info, all_data, header = true)
 CSV.write(dir*"ll_"*sim_info, ll_sim_data, header = true)

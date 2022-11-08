@@ -8,8 +8,6 @@ using Pkg
 # Pkg.add("LinearAlgebra")
 # Pkg.add("Tables")
 
-cd("/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial")
-
 using DifferentialEquations
 using CSV
 using DataFrames
@@ -17,15 +15,10 @@ using Distributions
 using LinearAlgebra
 using Tables
 
-idx = 2
-parameters = [10,20,30,40,50,60,70,80]
-myparam = parameters[idx + 1]
+#cd("/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/code")
 
-dist_df = DataFrame(CSV.File("/Users/katherinedixon/Documents/StuffINeed/_Research/_DFTM_2021/Field_2021/_data/coord_distances_R3.csv"))
-ll_df = DataFrame(CSV.File("/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/_data/data_for_ll.csv"))
-
-propertynames(ll_df)
-
+dist_df = DataFrame(CSV.File("../data/coord_distances_R3.csv"))
+ll_df = DataFrame(CSV.File("../data/data_for_ll.csv"))
 
 
 function twostrain_SEIR(du,u,p,t)
@@ -406,21 +399,88 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
     summary_df.pdoug .= pdoug
     summary_df.rho .= rho
 
-    return summary_df, S_df, all_long
+    total_frac = frac_pop1 + frac_pop2
+    total_frac_means = mean(total_frac,dims = 1)
+
+    frac1_means = mean(frac_pop1,dims = 1)
+    frac2_means = mean(frac_pop2,dims = 1)
+
+    snpv_frac = frac1_means ./ total_frac_means
+    mnpv_frac = frac2_means ./ total_frac_means
+
+    f10_index = findall(x -> x >= 0.1, total_frac_means[1,:])
+    f30_index = findall(x -> x >= 0.3, total_frac_means[1,:])
+
+    s10 = mean(snpv_frac[:,f10_index])
+    m10 = mean(mnpv_frac[:,f10_index])
+
+    s30 = mean(snpv_frac[:,f30_index])
+    m30 = mean(mnpv_frac[:,f30_index])
+
+    sall = mean(snpv_frac[2:(gen+1)])
+    mall = mean(mnpv_frac[2:(gen+1)])
+
+    mean_all = mean(total_frac_means)
+
+    mean_last_S = mean(S_pop[:,(gen-50):gen])
+    max_S = maximum(S_pop)
+    min_last_S = minimum(S_pop[:,(gen-50):gen])
+
+    mean_last_Z1 = mean(Z1_pop[:,(gen-50):gen])
+    mean_last_Z2 = mean(Z2_pop[:,(gen-50):gen])
+
+
+    if mean_last_S <= 10 && mean_last_S >= 1e-2 && max_S <= 1e2 && min_last_S >= 1e-10
+        qual = "stable"
+    else
+        qual = "unstable"
+    end
+
+    if mean_last_Z1 <= 1e-10
+        extinct_SNPV = 1
+    else
+        extinct_SNPV = 0
+    end
+
+    if mean_last_Z2 <= 1e-10
+        extinct_MNPV = 1
+    else
+        extinct_MNPV = 0
+    end
+
+    small_df = filter(:n_trees => ==(pdoug), ll_df)
+
+    probs_df = DataFrame()
+    for i in 1:length(small_df.id)
+
+        if qual == "stable"
+            probs_list = [dbinom(small_df.MNPV[i],small_df.total[i],m10), dbinom(small_df.MNPV[i],small_df.total[i],m30),dbinom(small_df.MNPV[i],small_df.total[i],mall)]
+        else
+            probs_list = [exp(-30),exp(-30),exp(-30)]
+        end
+
+        prop_list = [m10,m30,mall]
+        filter_list = [">=10%", ">=30%","all"]
+
+        temp_df = DataFrame(LL = probs_list, MNPV_prop = prop_list, FI_filter = filter_list)
+        temp_df.id .= small_df.id[i]
+
+        probs_df = vcat(probs_df,temp_df)
+    end
+
+    probs_df.quality .= qual
+    probs_df.sS .= si
+    probs_df.sM .= sr
+    probs_df.rep .= rep
+    probs_df.pdoug .= pdoug
+    probs_df.rho .= rho
+    probs_df.mean_FI .= mean_all
+    probs_df.extinct_S .= extinct_SNPV
+    probs_df.extinct_M .= extinct_MNPV
+
+    return summary_df, S_df, all_long, probs_df
 
 end
-
-
-# b_test = [1]
-# si_test = myparam
-# sr_test = [10,20,30,40,50,60,70,80]
-# pdoug_test = [0,0.25,0.5,0.75,1]
-# phi_test = [35]
-# #phi2_test = 20
-# r_test = [0.2]
-# gamma_test = [0.2]
-# sigma = 0.5
-# rho_test = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
 b_test = [1]
 sr_test = [1.5]
@@ -443,7 +503,7 @@ for srt in sr_test
         for gm in gamma_test
             for phi in phi_test
                 for rhot in rho_test
-                    for rp in 1:10
+                    for rp in 1:1
 
                         tree_vals = place_tree_sp(ndoug[1],number_of_pops)
 
@@ -458,7 +518,7 @@ for srt in sr_test
                         rep = rp
                         rho = rhot
 
-                        output_sim = run_simulation(0.2,ndoug, eps_val,300,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
+                        output_sim = run_simulation(0.2,ndoug, eps_val,10000,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
 
                         summary_data = vcat(summary_data,output_sim[1])
                         sim_data = vcat(sim_data,output_sim[2])
@@ -474,9 +534,9 @@ end #srt
 
 
 
-dir = "output_init_test/"
+dir = "/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/output_init_test/"
 
-sim_info = "stoch"*string(myparam)*".csv"
+sim_info = "10k"*string(1)*".csv"
 #sim_info = "douglas_test.csv"
 CSV.write(dir*"info_"*sim_info, sim_data, header = true)
 CSV.write(dir*"summary_"*sim_info, summary_data, header = true)
