@@ -20,6 +20,8 @@ using Tables
 dist_df = DataFrame(CSV.File("../data/coord_distances_R3.csv"))
 ll_df = DataFrame(CSV.File("../data/data_for_ll.csv"))
 
+ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
+
 
 function twostrain_SEIR(du,u,p,t)
     μ1, μ2, δ1, δ2, k1, k2, C1, C2, rho = p
@@ -168,7 +170,10 @@ for i in pop_nums
     dist_mat[:,i] = transpose(convert(Vector{Float64}, temp.distance))
 end
 
-#dist_mat[1,1] = 0
+function dbinom(n,k,p)
+    b = Binomial(k,p)
+    return pdf(b,n)
+end
 
 function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO, νMGR, CSDO, CSGR, CMDO, CMGR,rep, tree_vals, si,sr,rho,sigma,bi,br,gamma,r)
     #tree_vals = get_tree_sp(pdoug,number_of_pops)
@@ -332,6 +337,7 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
     all_long = outerjoin(all_long, tree_dat, on = :variable)
 
     all_long.rep .= rep
+    all_long.pdoug .= pdoug
 
     do_index = findall(x -> x =="DO", tree_vals)
     gr_index = findall(x -> x =="GR", tree_vals)
@@ -454,7 +460,23 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
     for i in 1:length(small_df.id)
 
         if qual == "stable"
-            probs_list = [dbinom(small_df.MNPV[i],small_df.total[i],m10), dbinom(small_df.MNPV[i],small_df.total[i],m30),dbinom(small_df.MNPV[i],small_df.total[i],mall)]
+
+            if isnan(m10) == true
+                p1 = NaN
+            else
+                p1 = dbinom(small_df.MNPV[i],small_df.total[i],m10)
+            end
+            if isnan(m30) == true
+                p2 = NaN
+            else
+                p2 = dbinom(small_df.MNPV[i],small_df.total[i],m30)
+            end
+            if isnan(mall) == true
+                p3 = NaN
+            else
+                p3 = dbinom(small_df.MNPV[i],small_df.total[i],mall)
+            end
+            probs_list = [p1,p2,p3]
         else
             probs_list = [exp(-30),exp(-30),exp(-30)]
         end
@@ -483,10 +505,10 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
 end
 
 b_test = [1]
-sr_test = [1.5]
-si_test = [13.75]
-ndoug = [18]
-phi_test = [35]
+sr_test = [0.5]
+si_test = [24.5]
+ndoug = [4,9,18,29,33]
+phi_test = [1]
 #phi2_test = 20
 r_test = [0.2]
 gamma_test = [0.2]
@@ -494,23 +516,25 @@ sigma = 0
 rho_test = [0.5]
 #is_test = 0.01:0.05:2
 
-sim_data = DataFrame()
+ll_sim_data = DataFrame()
 summary_data = DataFrame()
+info_data = DataFrame()
 all_data = DataFrame()
 
 for srt in sr_test
     for sit in si_test
         for gm in gamma_test
-            for phi in phi_test
+            for nd in ndoug
                 for rhot in rho_test
                     for rp in 1:1
 
-                        tree_vals = place_tree_sp(ndoug[1],number_of_pops)
+                        pdoug = nd
+                        tree_vals = place_tree_sp(pdoug,number_of_pops)
 
                         sr = srt
                         si = sit
-                        phi_S = phi
-                        phi_M = phi
+                        phi_S = phi_test[1]
+                        phi_M = phi_test[1]
                         r = r_test[1]
                         bi = b_test[1]
                         br = b_test[1]
@@ -518,11 +542,14 @@ for srt in sr_test
                         rep = rp
                         rho = rhot
 
-                        output_sim = run_simulation(0.2,ndoug, eps_val,10000,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
+                        output_sim = run_simulation(0.2,pdoug, eps_val,400,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
 
                         summary_data = vcat(summary_data,output_sim[1])
                         sim_data = vcat(sim_data,output_sim[2])
                         all_data = vcat(all_data,output_sim[3])
+                        ll_sim_data = vcat(ll_sim_data,output_sim[4])
+
+
 
 
                     end
@@ -532,20 +559,15 @@ for srt in sr_test
     end #sit
 end #srt
 
+ll_sim_data
 
+summary_data
 
 dir = "/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/output_init_test/"
 
-sim_info = "10k"*string(1)*".csv"
+sim_info = "lowphi"*string(1)*".csv"
 #sim_info = "douglas_test.csv"
 CSV.write(dir*"info_"*sim_info, sim_data, header = true)
 CSV.write(dir*"summary_"*sim_info, summary_data, header = true)
 CSV.write(dir*"all_"*sim_info, all_data, header = true)
-
-
-
-S_pop = zeros(number_of_pops, 200)
-
-S_pop = rand(LogNormal(-1,0.5),37,200)
-
-S_pop[:,(gen-50):gen]
+CSV.write(dir*"ll_"*sim_info, ll_sim_data, header = true)

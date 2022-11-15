@@ -453,7 +453,7 @@ for srt in sr_test
         for gm in gamma_test
             for pd in pd_test
                 for alph in alpha_test
-                    for rp in 1:1
+                    for rp in 1:5
 
                         ndoug = pd
 
@@ -475,9 +475,6 @@ for srt in sr_test
                         all_data = vcat(all_data,output_sim[1])
                         ll_sim_data = vcat(ll_sim_data,output_sim[2])
 
-
-
-
                     end
                 end
             end #phi
@@ -489,7 +486,7 @@ ll_sim_data
 gd = groupby(ll_sim_data, [:sS, :sM,:id,:FI_filter])
 ll_df_new = combine(gd, :LL => mean, :MNPV_prop => mean, :extinct_S => sum, :extinct_M => sum)
 
-dir = "output_init_test/"
+dir = "/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/output_init_test/"
 
 sim_info = "alpha"*string(1)*".csv"
 #sim_info = "douglas_test.csv"
