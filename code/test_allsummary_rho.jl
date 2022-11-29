@@ -505,10 +505,10 @@ function run_simulation(d, pdoug, eps_val, gen, phi1, phi2, νSDO, νSGR, νMDO,
 end
 
 b_test = [1]
-sr_test = [0.5]
-si_test = [24.5]
+sr_test = [1.5]
+si_test = [20]
 ndoug = [4,9,18,29,33]
-phi_test = [1]
+phi_test = [35]
 #phi2_test = 20
 r_test = [0.2]
 gamma_test = [0.2]
@@ -542,15 +542,12 @@ for srt in sr_test
                         rep = rp
                         rho = rhot
 
-                        output_sim = run_simulation(0.2,pdoug, eps_val,400,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
+                        output_sim = run_simulation(0.2,pdoug, eps_val,200,phi_S,phi_M,ν_SNPV_DO,ν_SNPV_GR,ν_MNPV_DO,ν_MNPV_GR,C_SNPV_DO,C_SNPV_GR,C_MNPV_DO,C_MNPV_GR,rep,tree_vals,si,sr,rho,sigma,bi,br,gamma,r)
 
                         summary_data = vcat(summary_data,output_sim[1])
                         sim_data = vcat(sim_data,output_sim[2])
                         all_data = vcat(all_data,output_sim[3])
                         ll_sim_data = vcat(ll_sim_data,output_sim[4])
-
-
-
 
                     end
                 end
@@ -565,7 +562,7 @@ summary_data
 
 dir = "/Users/katherinedixon/Documents/StuffINeed/_Research/Julia_spatial/output_init_test/"
 
-sim_info = "lowphi"*string(1)*".csv"
+sim_info = "phi"*string(35)*".csv"
 #sim_info = "douglas_test.csv"
 CSV.write(dir*"info_"*sim_info, sim_data, header = true)
 CSV.write(dir*"summary_"*sim_info, summary_data, header = true)
