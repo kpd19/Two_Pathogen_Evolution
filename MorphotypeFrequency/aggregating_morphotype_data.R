@@ -1,8 +1,6 @@
 library(tidyverse)
 library(gridExtra)
 
-setwd("/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/morphotype_dist")
-
 site_inf <- read_csv("data/site_infection_data_2019-2020.csv")
 ll_data <- read_csv("data/literature_dist_data.csv")
 
