@@ -12,7 +12,9 @@ The code was built using R version 4.3.2 and Julia version 1.7.2.  R can be down
 
 The spatial dataset on morphotype frequency data from the literature and our field collections was combined in the `aggregating_morphotype_data.R` script in R. We tabulated the total number of isolates identified as the multi-capsid morphotype or the single-capsid morphotype as a result of our PCR analyses. The code includes analysis of coinfections. 
 
-To calculate the percent of the forest that was made up of each tree species, we used the National Forest Type Dataset credated by the Forest Service Inventory and Analysis (FIA) program. The raster data can be downloaded [here](https://data.fs.usda.gov/geodata/rastergateway/forest_type/). For the United States sites, we calculated the percent of each tree species in a 5 kilometer radius around each field site. For sites that had no trees identified in the FIA dataset, we extended the radius to 10 kilometers. The script then bins the percent that is composed of Douglas-fir to the size of spatial grid used in our mechanistic model, which has 37 patches.  
+To calculate the percent of the forest that was made up of each tree species, we used the National Forest Type Dataset credated by the Forest Service Inventory and Analysis (FIA) program. The raster data can be downloaded [here](https://data.fs.usda.gov/geodata/rastergateway/forest_type/). In the script `forest_composition`, for the United States sites, we calculated the percent of each tree species in a 5 kilometer radius around each field site. For sites that had no trees identified in the FIA dataset, we extended the radius to 10 kilometers. The script then bins the percent that is composed of Douglas-fir to the size of spatial grid used in our mechanistic model, which has 37 patches.  
+
+The script `morph_douglas_glm.R` compares a generalized linear model there the percent of the multi-capsid morphotype is a function of percent Douglas-fir at each site to a model where there is no relationship to forest composition using AIC analysis. 
 
 # Running the parallelized fitting routine with Message Passing
 
