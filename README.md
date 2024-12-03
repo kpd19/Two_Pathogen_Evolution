@@ -20,7 +20,7 @@ To calculate the percent of the forest that was made up of each tree species, we
 
 The script `morph_douglas_glm.R` compares a generalized linear model there the percent of the multi-capsid morphotype is a function of percent Douglas-fir at each site to a model where there is no relationship to forest composition using AIC analysis. 
 
-The script `map_figure.R` visualizes the morphotype distribution 
+The script `map_figure.R` visualizes the morphotype distribution on a map with distributions of Douglas-fir and *Abies* species using shapefiles.
 
 # Running the parallelized fitting routine with Message Passing
 
