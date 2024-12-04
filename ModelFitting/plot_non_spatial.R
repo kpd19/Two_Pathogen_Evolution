@@ -1,6 +1,6 @@
 library(tidyverse)
 
-simulation <- read_csv("/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/spatial_model/realization_op/non_spatial_evolution/non_spatial_sig0.5.csv")
+simulation <- read_csv("realization_op/non_spatial_evolution/non_spatial_sig0.5.csv")
 
 snpv_col = "#ee8800"
 mnpv_col = '#5D65C5'
