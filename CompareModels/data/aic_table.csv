@@ -1,0 +1,7 @@
+ll,sigma,C,s,p,mod,AIC,dAIC
+-276.72,0.5,M + T,M + T,6,Selection mosaic for C and s,565.43,0
+-289.62,0.5,-,M + T,6,"Selection mosaic for s, C does not vary",591.24,25.81
+-296.7,0.5,M,M + T,6,Selection mosaic for s,605.39,39.96
+-402.5,0.5,M,M,4,No selection mosaic,813,247.57
+-449.34,0.5,M + T,M,4,Selection mosaic for C,906.67,341.24
+-564.69,0.5,M + T,-,4,"Selection mosaic for C, no evolution",1137.39,571.95
