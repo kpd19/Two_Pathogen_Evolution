@@ -7,7 +7,7 @@ using Tables
 using Dates
 using Random
 
-# running array jobs on the midway, idx is the index of the array
+# running array jobs on the midway computing cluster, idx is the index of the array
 idx = 18 # parse(Int64, ENV["SLURM_ARRAY_TASK_ID"]) 
 
 global parameters = Int[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 26.0, 29.0, 30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 36.0]
@@ -19,13 +19,13 @@ global pdoug = parameters[doug_num + 1]
 
 model = "host trees"
 dir = "realization_op/op1/"
-get_all_data = false
+get_all_data = true
 
-dist_df = DataFrame(CSV.File("files/coord_distances_R3.csv"))
-ll_df = DataFrame(CSV.File("files/morphotype_dist_data.csv")) # check for fix2
+dist_df = DataFrame(CSV.File("data/coord_distances_R3.csv"))
+ll_df = DataFrame(CSV.File("data/morphotype_dist_data.csv")) # check for fix2
 ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
 
-param_df = DataFrame(CSV.File("files/t6s_top30.csv"))
+param_df = DataFrame(CSV.File("data/selection_mosaic_top30.csv"))
 
 a = now()
 println("Time started: "*string(a)*" hours")
@@ -427,14 +427,14 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, rep::Int64, 
 
 end
 
-global sSD = param_df.sS_DO
-global sSG = param_df.sS_GR
+global sSD = param_df.sS_DO[1]
+global sSG = param_df.sS_GR[1]
 
-global sMD = param_df.sM_DO
-global sMG = param_df.sM_GR
+global sMD = param_df.sM_DO[1]
+global sMG = param_df.sM_GR[1]
 
-global phi_S = global phi_M = param_df.phi
-global rho = param_df.rho
+global phi_S = global phi_M = param_df.phi[1]
+global rho = param_df.rho[1]
 
 #30*2000*2/(60*60)*1.05
 
@@ -483,6 +483,8 @@ for p in 1:length(sSD)
     end
     
 end
+
+ll_data
 
 b = now()
 time_elapsed = round((b-a).value/(60000*60),digits = 2)

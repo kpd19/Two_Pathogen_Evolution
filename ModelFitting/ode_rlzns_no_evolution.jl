@@ -1,12 +1,3 @@
-using Pkg
-
-# Pkg.add("DifferentialEquations")
-# Pkg.add("CSV")
-# Pkg.add("DataFrames")
-# Pkg.add("Distributions")
-# Pkg.add("LinearAlgebra")
-# Pkg.add("Tables")
-
 using DifferentialEquations
 using CSV
 using DataFrames
@@ -16,7 +7,7 @@ using Tables
 using Dates
 using Random
 
-idx = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
+idx = 18 # parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
 global parameters = Int[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 26.0, 29.0, 30.0, 31.0, 32.0, 33.0, 34.0, 35.0, 36.0]
 #global parameters = Int[2.0,7.0,18.0,30.0,35.0]
 global num_pdoug = length(parameters)
@@ -26,13 +17,13 @@ global pdoug = parameters[doug_num + 1]
 
 model = "host trees"
 dir = "realization_op/ne1/"
-get_all_data = false
+get_all_data = true
 
-dist_df = DataFrame(CSV.File("files/coord_distances_R3.csv"))
-ll_df = DataFrame(CSV.File("files/morphotype_dist_data.csv")) # check for fix2
+dist_df = DataFrame(CSV.File("data/coord_distances_R3.csv"))
+ll_df = DataFrame(CSV.File("data/morphotype_dist_data.csv")) # check for fix2
 ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
 
-param_df = DataFrame(CSV.File("files/t4s_noevo_top30.csv"))
+param_df = DataFrame(CSV.File("data/no_evolution_top30.csv"))
 
 a = now()
 println("Time started: "*string(a)*" hours")
@@ -272,8 +263,6 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, lambda::Floa
         S_means = mean(S_pop,dims = 1)
         Z1_means = mean(Z1_pop,dims = 1)
         Z2_means = mean(Z2_pop,dims = 1)
-        nu1_means = mean(nu1_track,dims = 1)
-        nu2_means = mean(nu2_track,dims = 1)
         fraci1_means = mean(frac_pop1,dims = 1)
         fraci2_means = mean(frac_pop2,dims = 1)
 
@@ -301,22 +290,10 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, lambda::Floa
         insertcols!(fracI2_dat, 1, :Year => 1:rows)
         insertcols!(fracI2_dat, 1, :Species => "FracI2")
 
-        nu1_dat = DataFrame(Tables.table(transpose(nu1_means)))
-        insertcols!(nu1_dat, 1, :Year => 1:rows)
-        insertcols!(nu1_dat, 1, :Species => "nu1")
-
-        nu2_dat = DataFrame(Tables.table(transpose(nu2_means)))
-        insertcols!(nu2_dat, 1, :Year => 1:rows)
-        insertcols!(nu2_dat, 1, :Species => "nu2")
-
-        all_long = vcat(S_dat, Z1_dat, Z2_dat, nu1_dat, nu2_dat,fracI1_dat, fracI2_dat)
+        all_long = vcat(S_dat, Z1_dat, Z2_dat,fracI1_dat, fracI2_dat)
 
         all_long.rep .= rep
         all_long.pdoug .= pdoug
-        all_long.sS_DO .= sS_DO
-        all_long.sS_GR .= sS_GR
-        all_long.sM_DO .= sM_DO
-        all_long.sM_GR .= sM_GR
         all_long.phi .= phiS
         all_long.rho .= rho
         all_long.sigma .= sigma
@@ -391,10 +368,6 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, lambda::Floa
     probs_df.extinct_S .= extinct_SNPV
     probs_df.extinct_M .= extinct_MNPV
     probs_df.mean_pMNPV .= m_frac_mean
-    probs_df.sS_DO .= sS_DO
-    probs_df.sS_GR .= sS_GR
-    probs_df.sM_DO .= sM_DO
-    probs_df.sM_GR .= sM_GR
     probs_df.phi .= phiS
     probs_df.rho .= rho
     probs_df.sigma .= sigma
@@ -405,10 +378,10 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, lambda::Floa
         return probs_df, all_long
     end
 end
-global phi_S = param_df.phiS
-global phi_M = param_df.phiM
-global rho = param_df.rho
-global lambda = param_df.lambda
+global phi_S = param_df.phiS[1]
+global phi_M = param_df.phiM[1]
+global rho = param_df.rho[1]
+global lambda = param_df.lambda[1]
 
 global ndoug = pdoug
 global sigma = 0.5

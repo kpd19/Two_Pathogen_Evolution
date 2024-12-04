@@ -1,13 +1,3 @@
-using Pkg
-
-# Pkg.add("DifferentialEquations")
-# Pkg.add("CSV")
-# Pkg.add("DataFrames")
-# Pkg.add("Distributions")
-# Pkg.add("LinearAlgebra")
-# Pkg.add("Tables")
-# Pkg.add("Random")
-
 using DifferentialEquations
 using CSV
 using DataFrames
@@ -17,17 +7,17 @@ using Tables
 using Dates
 using Random
 
-idx = parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
+idx = 1 #parse(Int64, ENV["SLURM_ARRAY_TASK_ID"])
 
-dist_df = DataFrame(CSV.File("files/coord_distances_R3.csv"))
-ll_df = DataFrame(CSV.File("files/morphotype_dist_data.csv"))
+dist_df = DataFrame(CSV.File("data/coord_distances_R3.csv"))
+ll_df = DataFrame(CSV.File("data/morphotype_dist_data.csv"))
 ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
 
-param_df = DataFrame(CSV.File("files/nt4s_top30.csv"))
+param_df = DataFrame(CSV.File("data/no_selection_mosaic_top30.csv"))
 
 model  = "no trees"
-dir = "realization_op/op_nt1"
-get_all_data = false
+dir = "realization_op/op_nt1/"
+get_all_data = true
 
 a = now()
 println("Time started: "*string(a)*" hours")
@@ -325,10 +315,10 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, rep::Int64, 
 
         all_long.rep .= rep
         all_long.pdoug .= pdoug
-        all_long.sS_DO .= sS_DO
-        all_long.sS_GR .= sS_GR
-        all_long.sM_DO .= sM_DO
-        all_long.sM_GR .= sM_GR
+        all_long.sS_DO .= sS
+        all_long.sS_GR .= sS
+        all_long.sM_DO .= sM
+        all_long.sM_GR .= sM
         all_long.phi .= phiS
         all_long.rho .= rho
         all_long.sigma .= sigma
@@ -377,7 +367,7 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, rep::Int64, 
         qual = 1::Int
     end
 
-    small_df = filter(:n_trees => ==(pdoug), ll_df)::DataFrame
+    small_df = ll_df::DataFrame
 
     probs_df = DataFrame()
     for i in 1:length(small_df.id)
@@ -403,10 +393,10 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, rep::Int64, 
     probs_df.extinct_S .= extinct_SNPV
     probs_df.extinct_M .= extinct_MNPV
     probs_df.mean_pMNPV .= m_frac_mean
-    probs_df.sS_DO .= sS_DO
-    probs_df.sS_GR .= sS_GR
-    probs_df.sM_DO .= sM_DO
-    probs_df.sM_GR .= sM_GR
+    probs_df.sS_DO .= sS
+    probs_df.sS_GR .= sS
+    probs_df.sM_DO .= sM
+    probs_df.sM_GR .= sM
     probs_df.phi .= phiS
     probs_df.rho .= rho
     probs_df.sigma .= sigma
@@ -427,7 +417,7 @@ global rho = [param_df.rho[idx]]
 #length(sr_test)*length(si_test)*200*1*3.9/(60*60)*1.2
 
 global ndoug = 18
-global sigma = 1.25
+global sigma = 0.5
 
 if isdir(dir) == false
     mkdir(dir) 
@@ -443,10 +433,10 @@ if isdir(dir*"ll/") == false
 end
 
 ll_data = DataFrame()
-#all_data = DataFrame()
+all_data = DataFrame()
 
 for p in 1:length(phi_S)
-    for rp in 1:10 # change to 2000 if not testing
+    for rp in 1:10 # change to 2000 if not
 
         tree_vals = place_tree_sp(ndoug,number_of_pops)
         
@@ -464,7 +454,7 @@ for p in 1:length(phi_S)
     end
 end
 
-sim_info = "pset_"*string(idx)*"_test.csv"
+sim_info = "p"*string(idx)*"_sig"*string(sigma)*".csv"
 
 if get_all_data == false
     CSV.write(dir*"ll/"*sim_info, ll_data, header = true)
