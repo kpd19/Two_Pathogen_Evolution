@@ -4,7 +4,7 @@ This library contains code used in the manuscript titled Synthesizing Selection-
 
 # Requirements and Setup
 
-The code was built using R version 4.3.2 and Julia version 1.7.2.  R can be downloaded [here](https://www.r-project.org) and Julia can be downloaded [here](https://julialang.org/downloads/). The code requires several packages that are not part of the base R installations. After installing R, navigate to the main repository directory and run the installation.R script to install necessary packages. After installing Julia, run the installation.jl script to install necessary packages. 
+The code was built using R version 4.3.2 and Julia version 1.7.2.  R can be downloaded [here](https://www.r-project.org) and Julia can be downloaded [here](https://julialang.org/downloads/). The code requires several packages that are not part of the base R installations. After installing R, navigate to the main repository directory and run the installation.R script to install necessary packages. After installing Julia, run the installation.jl script to install necessary packages. The project also uses the Stan programming language, Stan version 2.32.2, to estimate transmission parameters. Stan can be downloaded [here](https://mc-stan.org/users/interfaces/).
 
 # Fitting Bayesian model to field transmission experiment results
 
