@@ -1,6 +1,6 @@
 # Summary
 
-This library contains code used in the manuscript titled Synthesizing Selection-Mosaic Theory and Host-Pathogen Theory to Explain Large-Scale Pathogen Coexistence in an Insect-Virus System. This paper uses data collected from field experiments and observational studies to explore the mechanisms supporting the coexistence of two viral morphotypes across populations of the Douglas-fir tussock moth. The model is implement in R and Julia. 
+This library contains code used in the manuscript titled Synthesizing Selection-Mosaic Theory and Host-Pathogen Theory to Explain Large-Scale Pathogen Coexistence in an Insect-Virus System. This paper uses data collected from field experiments and observational studies to explore the mechanisms supporting the coexistence of two viral morphotypes across populations of the Douglas-fir tussock moth. The model and analysis are implemented in R and Julia. 
 
 # Requirements and Setup
 
@@ -28,4 +28,5 @@ The `ModelFitting` directory contains the scripts for running the line search ro
 
 # Model comparison
 
+The `ModelComparison` directory contains the script `model_comparison.R`, which compares the results of all models tested using AIC analysis, which are reported in `data/aic_table.csv`. The likelihood values for the parameter sets for each model are contained in the `data` directory. The `data` directory also contains the results of the fraction infected by the multi-capsid morphotype for each parameter set for each model. The script plots the percent multi-capsid morphotype as a function of percent Douglas-fir, which are shown in `figures` directory.
 
