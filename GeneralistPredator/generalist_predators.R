@@ -1,14 +1,9 @@
 library(tidyverse)
 
-pred <- read_csv("data/predator_test1.csv")
-pred2 <- read_csv("spatial_model/data/predator_all2.csv")
-lls <- read_csv("spatial_model/data/predator_ll1.csv")
-
-
-ll_data <- read_csv("CompareModels/data/morphotype_dist_data.csv")
-
+gen_pred <- read_csv("GeneralistPredator/data/generalist_predator_simulations.csv")
+gen_pred_pmnpv <- read_csv("GeneralistPredator/data/generalist_predator_pMNPV.csv")
+ll_data <- read_csv("GeneralistPredator/data/morphotype_dist_data.csv")
 t6s_pmnpv <- read_csv("CompareModels/data/pmnpv_t6s_fix2noext.csv")
-
 t6s_pmnpv <- t6s_pmnpv %>% filter(sigma == 0.5,pset == 7)
 
 field_data_round <- ll_data %>% mutate(round_pd = round(Douglas_fir*9)/9) %>% group_by(round_pd) %>% 
@@ -23,52 +18,44 @@ field_data_round <- ll_data %>% mutate(round_pd = round(Douglas_fir*9)/9) %>% gr
   mutate(se_pMNPV = sd_pMNPV/sqrt(len),
          se_pd = sd_pd/sqrt(len))
 
+pd_pick <- c(2,7,18,30,35)
 
-small <- pred %>% filter(pdoug %in% c(18))
+snpv_col <- "#ee8800"
+mnpv_col <-'#5D65C5'
 
-small %>% filter(Species %in% c("S","Z1","Z2"), rep == 1) %>%
-  ggplot() + aes(x = Year, y = Column1, group = Species, color = Species) + geom_line() +
+gen_pred_long <- gen_pred %>% mutate(FI = FracI1 + FracI2) %>% 
+  pivot_longer(cols = c('S','Z1',"Z2",'nu1','nu2','FracI1','FracI2'),names_to = 'Species',values_to = "Column1") %>% 
+  mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir", '18' = '50% Douglas-fir', '30' = '80% Douglas-fir', '35' = '95% Douglas-fir'))
+
+gen_pred_long %>% filter(Species %in% c("S","Z1","Z2"), rep == 1, omega == 0.14,a %in% c(0.1,0.9)) %>%
+  mutate(pop = recode(Species, "S" = "Host", "Z1" = "SNPV", "Z2" = "MNPV")) %>% 
+  ggplot() + aes(x = Year, y = Column1, group = pop, color = pop) + geom_line() +
   theme_classic(base_size = 15) + 
-  facet_grid(omega~a) + 
+  facet_grid(pd~a) + 
+  scale_y_log10() +
+  scale_color_manual("", values = c("Host" = "forestgreen", 'SNPV' = snpv_col, "MNPV" = mnpv_col)) 
+
+legend_labels <- c(expression(bar(nu)["SNPV"]),expression(bar(nu)["MNPV"]))
+
+gen_pred_long %>% filter(Species %in% c("nu1","nu2"), rep == 1, omega == 0.14,a %in% c(0.1,0.9)) %>%
+  ggplot() + aes(x = Year, y = Column1, group = Species, color = Species) + geom_line() +
+  scale_color_manual("", values = c(snpv_col, mnpv_col), labels = parse(text = legend_labels)) + 
+  theme_classic(base_size = 15) + 
+  facet_grid(pd~a) + 
   scale_y_log10()
 
-stats <- pred %>% filter(Species %in% c('FracI1','FracI2'))  %>% filter(Year>=50) %>% 
-  pivot_wider(names_from = Species, values_from = Column1) %>% mutate(FI = FracI1 + FracI2, n = 1) %>% 
-  filter(FI >= 0.3) %>% group_by(pdoug,omega,a,rep) %>%
-  summarize(mean_MNPV = mean(FracI2/FI),
-            sum_n = sum(n),
-            mean_FI = mean(FI))
+gen_pred_long %>% filter(Species %in% c("FracI1",'FracI2'), rep == 1, omega == 0.14, a %in% c(0.1,0.9)) %>% 
+  mutate(Species = recode(Species, "FracI1" = "SNPV", "FracI2" = 'MNPV')) %>% 
+  ggplot() + aes(x = Year, y = Column1/FI, group = Species, fill = Species, color = Species) + geom_bar(stat = 'identity') +
+  theme_classic(base_size = 15) + 
+  facet_grid(a~pd) +
+  scale_fill_manual("", values = c('SNPV' = snpv_col, "MNPV" = mnpv_col))  +
+  scale_color_manual("", values = c('SNPV' = snpv_col, "MNPV" = mnpv_col)) 
 
-stats_all <- stats %>% group_by(pdoug,omega,a) %>% summarize(mean_reps = mean(mean_MNPV),
-                                                             mean_FI = mean(mean_FI))
+gen_pred_avgs <- gen_pred_pmnpv %>% group_by(pdoug,omega,a) %>% summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE))
 
-pdf("spatial_model/figures/gen_pred_test.pdf",height = 6, width = 8)
-stats_all %>% ggplot() + aes(x = pdoug, y = mean_reps, group = omega, color = omega) +
-  geom_line() + theme_classic(base_size = 15) + 
-  facet_wrap(~a,nrow = 2, labeller = label_bquote(rows = a == .(a))) + 
-  scale_color_viridis_c(expression(omega), option = 'viridis') + 
-  ylab("% Multi-capsid morphotype") + xlab("% Douglas-fir")
-
-stats_all %>% ggplot() + aes(x = pdoug, y = mean_FI, group = omega, color = omega) +
-  geom_line() + theme_classic(base_size = 15) + 
-  facet_wrap(~a,nrow = 2, labeller = label_bquote(rows = a == .(a))) + 
-  scale_color_viridis_c(expression(omega), option = 'viridis') + 
-  ylab("% Multi-capsid morphotype") + xlab("% Douglas-fir")
-dev.off()
-
-lls %>% ggplot() + aes(x = pdoug, y = mean_pMNPV) + geom_point() + 
-  theme_classic(base_size = 15)
-
-lls %>% group_by(pdoug,omega,a) %>% summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE)) %>% 
-  ggplot() + aes(x = pdoug, y = mean_MNPV, group = omega, color = omega) +
-  geom_line() + theme_classic(base_size = 15) + 
-  facet_wrap(~a,nrow = 2, labeller = label_bquote(rows = a == .(a))) + 
-  scale_color_viridis_c(expression(omega), option = 'viridis') + 
-  ylab("% Multi-capsid morphotype") + xlab("% Douglas-fir")
-ll_avgs <- lls %>% group_by(pdoug,omega,a) %>% summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE))
-
-pdf("spatial_model/figures/gen_pred_test2.pdf",height = 6, width = 10)
-ll_avgs %>% 
+pdf("GeneralistPredator/figures/generalist_pred_pmnpv.pdf",height = 6, width = 10)
+gen_pred_avgs %>% 
   ggplot() +
   theme_classic(base_size = 15) + 
   geom_point(data = field_data_round, aes(x = trees/37*100, y = pMNPV*100, size = sum_tot), show.legend = FALSE) +
