@@ -32,7 +32,11 @@ This directory also contains a version of the non-spatial evolutionary model in 
 
 The `ModelComparison` directory contains the script `model_comparison.R`, which compares the results of all models tested using AIC analysis, which are reported in `data/aic_table.csv`. The likelihood values for the parameter sets for each model are contained in the `data` directory. The `data` directory also contains the results of the fraction infected by the multi-capsid morphotype for each parameter set for each model. The script plots the percent multi-capsid morphotype as a function of percent Douglas-fir, which are shown in `figures` directory.
 
+## Analyzing simulations for best parameter set
+
 The script `simulations_over_pdoug.R` analyzes the population dynamics for the best parameter set from the AIC analysis for a single example stochastic realization. The figure shows the host and pathogen population dynamics, the fluctuating transmission risk, the fraction infected, the summary of fraction infected by each morphotype for high infection years, and phase diagrams over time. For the phase diagrams, we also include a deterministic realization to show the difference in dynamics between including stochasticity and not. The realization data is included in the `data` directory as `t6s_4k.csv` for 4000 years of a stochastic simulation and `t6s_2k_deterministic.csv` for 2000 years of a deterministic simulation.
+
+The script `single_path.R` script analyzes the transmission risk and host population dynamics over time for the best population dynames over three cases: both pathogens present, single-capsid morphotype only present, and multi-capsid morphotype only present. The script uses a function to find the maxmimum host outbreak size and the package `WaveletComp` to find the periods between the host outbreaks. The script plots an example of the fluctuations in average transmission risk over time and the distribution in host outbreak sizes for each case. 
 
 ## Generalist Predator
 
