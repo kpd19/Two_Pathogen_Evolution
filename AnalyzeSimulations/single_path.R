@@ -160,7 +160,7 @@ write_csv(all_amps,"AnalyzeSimulations/data/normal_amps_S.csv")
 write_csv(all_periods,"AnalyzeSimulations/data/normal_periods_S.csv")
 write_csv(all_peaks,"AnalyzeSimulations/data/normal_peaks_S.csv")
 
-all_peaks <- all_peaks %>% mutate(type = recode(type, "no SNPV" = 'MNPV only', "no MNPV" = "SNPV only", "normal" = "Both pathogens"))
+all_peaks <- all_peaks %>% mutate(type = recode(type, "no SNPV" = 'Multi-capsid morphotype only', "no MNPV" = "Single-capsid morphotype only", "normal" = "Both pathogens"))
 
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
@@ -180,7 +180,8 @@ all_peaks %>%
   ggplot() + aes(x = pdoug/37*100, y = peak, group=interaction(pdoug,type),fill = type) +
   geom_boxplot(alpha = 0.75, outliers = FALSE, width = 8) + theme_classic(base_size = 15) + 
   ylab(expression(log[10] ~ "Peak Host Population Size")) +
-  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", 'SNPV only' = snpv_col, "MNPV only" = mnpv_col)) + 
+  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", 'Single-capsid morphotype only' = snpv_col,
+                                   "Multi-capsid morphotype only" = mnpv_col)) + 
   xlab("% Douglas-fir") + 
   theme(legend.position = 'top')
 dev.off()
