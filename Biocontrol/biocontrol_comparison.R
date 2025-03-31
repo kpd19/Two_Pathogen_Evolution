@@ -5,8 +5,9 @@ library(gg3D)
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
 
-biocontrol_grid <- read_csv("Biocontrol/data/biocontrol_data.csv")
+biocontrol_grid <- read_csv("Biocontrol/data/biocontrol_data_pdoug18.csv")
 biocontrol_t0.5p150 <- read_csv("Biocontrol/data/biocontrol_data_t0.5_p150.csv")
+biocontrol_pd <- read_csv("Biocontrol/data/biocontrol_data_pdoug.csv")
 
 bicontrol_long <- biocontrol_grid %>% pivot_longer(cols = c('S','nu1','nu2'),
                                    names_to = 'Species',values_to = "Column1") 
@@ -41,7 +42,10 @@ biocontrol_pick <- 150
 
 legend_labels <- c(expression(bar(nu)["SNPV"]),expression(bar(nu)["MNPV"]))
 
-pd_multi <- bicontrol_long %>% filter(type == "100% multi-capsid morphotype", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
+pd_long <- biocontrol_pd %>% pivot_longer(cols = c('S','nu1','nu2'),
+                                                   names_to = 'Species',values_to = "Column1") 
+
+pd_multi <- pd_long %>% filter(type == "100% multi-capsid morphotype", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
                   Species %in% c("nu2",'nu1'), Year >= 100, Year <= 300) %>% 
   mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",'13' = '35% Douglas-fir',
                      '18' = '50% Douglas-fir', '24' = '65% Douglas-fir', 
@@ -58,7 +62,7 @@ pd_multi <- bicontrol_long %>% filter(type == "100% multi-capsid morphotype", re
   scale_color_manual("", values = c(snpv_col, mnpv_col), labels = parse(text = legend_labels)) + 
   ggtitle("100% multi-capsid morphotype")  +
   ylab("Transmission risk")
-pd_single <- bicontrol_long %>% filter(type == "100% single-capsid morphotype", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
+pd_single <- pd_long %>% filter(type == "100% single-capsid morphotype", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
                     Species %in% c("nu2",'nu1'), Year >= 100, Year <= 300) %>% 
   mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",'13' = '35% Douglas-fir',
                      '18' = '50% Douglas-fir', '24' = '65% Douglas-fir', 
@@ -76,7 +80,7 @@ pd_single <- bicontrol_long %>% filter(type == "100% single-capsid morphotype", 
   ggtitle("100% single-capsid morphotype")  +
   ylab("Transmission risk")
 
-pd_mix <- bicontrol_long %>% filter(type == "50% multi-capsid, 50% single-capsid", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
+pd_mix <- pd_long %>% filter(type == "50% multi-capsid, 50% single-capsid", rep == 1, thresh == thresh_pick, biocontrol == biocontrol_pick,
                                  Species %in% c("nu2",'nu1'), Year >= 100, Year <= 300) %>% 
   mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",'13' = '35% Douglas-fir',
                      '18' = '50% Douglas-fir', '24' = '65% Douglas-fir', 
