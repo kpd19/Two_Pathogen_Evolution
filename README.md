@@ -41,3 +41,7 @@ The script `single_path.R` script analyzes the transmission risk and host popula
 ## Generalist Predator
 
 The `GeneralistPredator` directory includes the script to run the model with the best parameter set with the inclusion of a generalist predator, `ode_rlzns_predator.jl`. The script `generalist_predators.R` analyzes the example simulation data for high and low attack rates and computes the % multi-capsid morphotype for varying rates of maximum fraction killed (a) and the hsot population density at which the fraction killed is maximized (&omega;). 
+
+## Biocontrol
+
+The `Biocontrol` directory contains scripts to analyze the effects of using virus as a biocontrol on host population and transmission risk. The script biocontrol.jl creates simulations for a range of biocontrol levels at different probabilities of spraying and thresholds for cases with varying amounts of each morphotype as biocontrol. The script `biocontrol_comparison.R` analyzes the different levels and thresholds. The script `biocontrol_freq.R` analzes the effects on transmission risk and host population sizes when the likelihood of spraying is varied. 
