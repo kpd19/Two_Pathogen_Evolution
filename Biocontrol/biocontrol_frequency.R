@@ -5,9 +5,6 @@ library(gg3D)
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
 
-SNPV <- read_csv("/Volumes/My Book/Spatial_DFTM_modeling/Julia_sims/biocontrol/biocontrol_SNPV2.csv")
-MIX <- read_csv("/Volumes/My Book/Spatial_DFTM_modeling/Julia_sims/biocontrol/biocontrol_MIX.csv")
-
 freq_MNPV <- read_csv("Biocontrol/data/biocontrol_probability_MNPV.csv")
 freq_SNPV <- read_csv("Biocontrol/data/biocontrol_probability_SNPV.csv")
 freq_MIX <- read_csv("Biocontrol/data/biocontrol_probability_MIX.csv")
