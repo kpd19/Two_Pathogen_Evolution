@@ -18,8 +18,6 @@ global num_pdoug = length(parameters)
 global doug_num = Int(mod(idx,num_pdoug))
 global pdoug = parameters[doug_num + 1]
 
-print(pdoug)
-
 dist_df = DataFrame(CSV.File("files/coord_distances_R3.csv"))
 ll_df = DataFrame(CSV.File("files/data_for_ll_fix2_noext.csv")) # check for fix2
 ll_df[:,:n_trees] = convert.(Int,round.(ll_df.n_trees, digits = 0))
@@ -28,6 +26,9 @@ param_df = DataFrame(CSV.File("files/stoch/best_parameter_set.csv"))
 
 get_all_data = true
 dir = "output_sims/biocontrol_prob_MIX/"
+
+mix_SNPV = 0.5
+mix_MNPV = 0.5
 
 a = now()
 println("Time started: "*string(a)*" hours")
@@ -299,8 +300,8 @@ function run_simulation(pdoug::Int64, phiS::Float64, phiM::Float64, rep::Int64, 
             end
 
             S_init = S_move[p]::Float64
-            Z1_init = Z1_move[p]::Float64 + TMB_track[t]*0.5
-            Z2_init = Z2_move[p]::Float64 + TMB_track[t]*0.5
+            Z1_init = Z1_move[p]::Float64 + TMB_track[t]*mix_SNPV
+            Z2_init = Z2_move[p]::Float64 + TMB_track[t]*mix_MNPV
             nu1_init = nu1_move[p]::Float64 
             nu2_init = nu2_move[p]::Float64 
 
