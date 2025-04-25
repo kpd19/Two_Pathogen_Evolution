@@ -31,7 +31,6 @@ trees <- sample(x = c("DO","GR"), size = dim(coord_df)[1], prob = c(0.5,0.5), re
 
 coord_df$trees <- trees
 
-pdf("/Users/katherinedixon/Documents/StuffINeed/_Research/_DFTM_2021/Field_2021/_plots/_eeid/hexagons_linkedin2.pdf",height = 5, width = 5)
 coord_df %>% mutate(trees = ifelse(trees == "DO",'Douglas fir','Grand fir')) %>%
   ggplot() + aes(x0 = xvals, y0 = yvals, sides = 6, angle = 0, r = 1, fill = trees) +
   geom_regon(color = 'palegreen4') + theme_classic() + 
@@ -41,7 +40,6 @@ coord_df %>% mutate(trees = ifelse(trees == "DO",'Douglas fir','Grand fir')) %>%
   theme_void() +
   #theme(legend.position = c(0.9,0.93))
   theme(legend.position = 'none')
-dev.off()
 
 num_vals <- unique(coord_df$num)
 
@@ -65,5 +63,5 @@ coord_dist %>% filter(ref == 1) %>%
   geom_text(aes(x = xvals,y = yvals, label = num), color = 'white')
 
 
-write.csv(coord_dist, paste0("_data/coord_distances_R",grid.r,".csv"))
+write.csv(coord_dist, paste0("data/coord_distances_R",grid.r,".csv"))
 
