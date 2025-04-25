@@ -1,6 +1,6 @@
 library(tidyverse)
 library(gridExtra)
-library(gg3D)
+#library(gg3D)
 
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
@@ -225,23 +225,31 @@ MIX3_control <- freq_MIX3 %>% filter(Year >=150, Year <= 249, prob != 0) %>% gro
 
 all_control <- rbind(SNPV_control,MNPV_control,MIX_control,MIX3_control,MIX2_control,no_control)
 
-all_control_summary <- all_control %>% filter(pdoug == 18, Year == 249) %>% 
-  group_by(type,prob) %>% summarize(mean_csum = mean(csum_S),
+all_control_summary <- all_control %>% filter(Year == 249) %>% 
+  group_by(type,prob,pdoug) %>% summarize(mean_csum = mean(csum_S),
                                     sd_csum = sd(csum_S),
                                     mean_S2 = mean(mean_S),
                                     sd_S = sd(mean_S)) 
 
-baseline <- all_control_summary %>% filter(prob == 0) %>% select(type,mean_S2) %>% rename(baseline = mean_S2) %>% 
-  select(baseline)
+baseline <- all_control_summary %>% filter(prob == 0) %>% select(type,mean_S2,pdoug) %>% rename(baseline = mean_S2) %>% 
+  ungroup() %>% 
+  select(baseline,pdoug)
 
 all_control_summary <- merge(all_control_summary,baseline)
 
 pdf("Biocontrol/figures/spray_effectiveness_percent.pdf",height = 8, width = 12)
-all_control_summary %>% mutate(type = factor(type,
-                                             levels = c('No biocontrol applied','100% multi-capsid morphotype',
-                                                        '75% multi-capsid, 25% single-capsid', '50% multi-capsid, 50% single-capsid',
-                                                        '25% multi-capsid, 75% single-capsid',
-                                                        "100% single-capsid morphotype"))) %>% 
+all_control_summary %>%
+  filter(pdoug %in% c(2,7,18,30,35)) %>% 
+  mutate(type = factor(type,
+                       levels = c('No biocontrol applied','100% multi-capsid morphotype',
+                                  '75% multi-capsid, 25% single-capsid', '50% multi-capsid, 50% single-capsid',
+                                  '25% multi-capsid, 75% single-capsid',
+                                  "100% single-capsid morphotype"))) %>% 
+  mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",
+                     '18' = '50% Douglas-fir', 
+                     '30' = '80% Douglas-fir', '35' = '95% Douglas-fir')) %>% 
+  mutate(pd = factor(pd, levels = c('5% Douglas-fir',"20% Douglas-fir",'50% Douglas-fir',
+                                    '80% Douglas-fir', '95% Douglas-fir'))) %>% 
   ggplot() + aes(x = prob, (mean_S2 - baseline)/baseline*100, group = type, color = type) + geom_point(size = 3) +
   geom_errorbar(aes(ymin = (mean_S2 - baseline)/baseline*100 - (sd_S/sqrt(20))/baseline*100,
                     ymax = (mean_S2 - baseline)/baseline*100 + (sd_S/sqrt(20))/baseline*100), size = 1, width = 0.05) +
@@ -256,28 +264,38 @@ all_control_summary %>% mutate(type = factor(type,
   xlab("Probability of Conducting Biocontrol") + 
   theme(legend.position = 'top') + 
   guides(color=guide_legend(nrow=2,byrow=TRUE)) +
-  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey55')
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey55') + 
+  facet_wrap(~pdoug)
 dev.off()
 
 
-pdf("Biocontrol/figures/spray_effectiveness_percent2.pdf",height = 6, width = 8)
+pdf("Biocontrol/figures/spray_effectiveness_percent2.pdf",height = 5, width = 10)
 all_control_summary %>% filter(type %in% c('No biocontrol applied','100% multi-capsid morphotype',
                                            '50% multi-capsid, 50% single-capsid',
-                                           "100% single-capsid morphotype")) %>% mutate(type = factor(type,
+                                           "100% single-capsid morphotype"),
+                               pdoug %in% c(2,7,18,30,35)) %>% mutate(type = factor(type,
                                              levels = c('No biocontrol applied','100% multi-capsid morphotype',
                                                         '50% multi-capsid, 50% single-capsid',
                                                         "100% single-capsid morphotype"))) %>% 
+  mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",
+                     '18' = '50% Douglas-fir', 
+                     '30' = '80% Douglas-fir', '35' = '95% Douglas-fir')) %>% 
+  mutate(pd = factor(pd, levels = c('5% Douglas-fir',"20% Douglas-fir",'50% Douglas-fir',
+                                    '80% Douglas-fir', '95% Douglas-fir'))) %>% 
   ggplot() + aes(x = prob, (mean_S2 - baseline)/baseline*100, group = type, color = type) + geom_point(size = 3) +
+  geom_line(size = 1, alpha = 0.5) +
   geom_errorbar(aes(ymin = (mean_S2 - baseline)/baseline*100 - (sd_S/sqrt(20))/baseline*100,
                     ymax = (mean_S2 - baseline)/baseline*100 + (sd_S/sqrt(20))/baseline*100), size = 1, width = 0.05) +
   theme_classic(base_size = 15) + 
   scale_color_manual("", values = c('No biocontrol applied' = 'grey55',
-                                    '100% multi-capsid morphotype' = '#08519c',
-                                    '50% multi-capsid, 50% single-capsid' ='#33a02c',
-                                    "100% single-capsid morphotype" = '#e34a33'))+ 
+                                    '100% multi-capsid morphotype' = mnpv_col,
+                                    '50% multi-capsid, 50% single-capsid' ='#1B6D15',
+                                    "100% single-capsid morphotype" = snpv_col))+ 
   ylab(expression(Delta ~ "Host Population (%)")) + 
-  xlab("Probability of Conducting Biocontrol") + 
+  xlab("Probability of Conducting Biocontrol Management") + 
   theme(legend.position = 'top') + 
   guides(color=guide_legend(nrow=2,byrow=TRUE)) +
-  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey55')
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'grey55') + 
+  facet_wrap(~pd,nrow = 1) + 
+  scale_x_continuous(breaks = c(0,0.2,0.4,0.6,0.8,1.0))
 dev.off()
