@@ -2,6 +2,8 @@ library(tidyverse)
 library(gridExtra)
 #library(gg3D)
 
+setwd('/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/')
+
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
 
@@ -237,19 +239,21 @@ baseline <- all_control_summary %>% filter(prob == 0) %>% select(type,mean_S2,pd
 
 all_control_summary <- merge(all_control_summary,baseline)
 
-pdf("Biocontrol/figures/spray_effectiveness_percent.pdf",height = 8, width = 12)
-all_control_summary %>%
-  filter(pdoug %in% c(2,7,18,30,35)) %>% 
-  mutate(type = factor(type,
-                       levels = c('No biocontrol applied','100% multi-capsid morphotype',
-                                  '75% multi-capsid, 25% single-capsid', '50% multi-capsid, 50% single-capsid',
-                                  '25% multi-capsid, 75% single-capsid',
-                                  "100% single-capsid morphotype"))) %>% 
+all_control_summary <- all_control_summary %>% filter(type %in% c('No biocontrol applied','100% multi-capsid morphotype',
+                                                                  '50% multi-capsid, 50% single-capsid',
+                                                                  "100% single-capsid morphotype"),
+                                                      pdoug %in% c(2,7,18,30,35)) %>% mutate(type = factor(type,
+                                                                                                           levels = c('No biocontrol applied','100% multi-capsid morphotype',
+                                                                                                                      '50% multi-capsid, 50% single-capsid',
+                                                                                                                      "100% single-capsid morphotype"))) %>% 
   mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",
                      '18' = '50% Douglas-fir', 
                      '30' = '80% Douglas-fir', '35' = '95% Douglas-fir')) %>% 
   mutate(pd = factor(pd, levels = c('5% Douglas-fir',"20% Douglas-fir",'50% Douglas-fir',
-                                    '80% Douglas-fir', '95% Douglas-fir'))) %>% 
+                                    '80% Douglas-fir', '95% Douglas-fir')))
+
+pdf("Biocontrol/figures/spray_effectiveness_percent.pdf",height = 8, width = 12)
+all_control_summary %>% 
   ggplot() + aes(x = prob, (mean_S2 - baseline)/baseline*100, group = type, color = type) + geom_point(size = 3) +
   geom_errorbar(aes(ymin = (mean_S2 - baseline)/baseline*100 - (sd_S/sqrt(20))/baseline*100,
                     ymax = (mean_S2 - baseline)/baseline*100 + (sd_S/sqrt(20))/baseline*100), size = 1, width = 0.05) +
@@ -268,20 +272,8 @@ all_control_summary %>%
   facet_wrap(~pdoug)
 dev.off()
 
-
 pdf("Biocontrol/figures/spray_effectiveness_percent2.pdf",height = 5, width = 10)
-all_control_summary %>% filter(type %in% c('No biocontrol applied','100% multi-capsid morphotype',
-                                           '50% multi-capsid, 50% single-capsid',
-                                           "100% single-capsid morphotype"),
-                               pdoug %in% c(2,7,18,30,35)) %>% mutate(type = factor(type,
-                                             levels = c('No biocontrol applied','100% multi-capsid morphotype',
-                                                        '50% multi-capsid, 50% single-capsid',
-                                                        "100% single-capsid morphotype"))) %>% 
-  mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",
-                     '18' = '50% Douglas-fir', 
-                     '30' = '80% Douglas-fir', '35' = '95% Douglas-fir')) %>% 
-  mutate(pd = factor(pd, levels = c('5% Douglas-fir',"20% Douglas-fir",'50% Douglas-fir',
-                                    '80% Douglas-fir', '95% Douglas-fir'))) %>% 
+all_control_summary %>% 
   ggplot() + aes(x = prob, (mean_S2 - baseline)/baseline*100, group = type, color = type) + geom_point(size = 3) +
   geom_line(size = 1, alpha = 0.5) +
   geom_errorbar(aes(ymin = (mean_S2 - baseline)/baseline*100 - (sd_S/sqrt(20))/baseline*100,
@@ -299,3 +291,9 @@ all_control_summary %>% filter(type %in% c('No biocontrol applied','100% multi-c
   facet_wrap(~pd,nrow = 1) + 
   scale_x_continuous(breaks = c(0,0.2,0.4,0.6,0.8,1.0))
 dev.off()
+
+all_control_summary %>% mutate(delta = (mean_S2 - baseline)/baseline*100) %>%
+  group_by(pd) %>% filter(delta == min(delta))
+
+all_control_summary %>% mutate(delta = (mean_S2 - baseline)/baseline*100) %>% filter(type == '100% multi-capsid morphotype') %>%
+  group_by(pd) %>% filter(delta == min(delta))
