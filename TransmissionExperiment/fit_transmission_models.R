@@ -3,7 +3,6 @@ library(rstan)
 library(loo)
 library(bayesplot)
 library(gridExtra)
-#library(bridgesampling)
 
 options(mc.cores = parallel::detectCores()) #run cores in parallel
 rstan_options(auto_write = TRUE) #auto-write compiled code to hard drive
@@ -12,7 +11,7 @@ source("functions.R")
 
 `%ni%` <- Negate(`%in%`)
 
-input_data <- read_csv("data/STAN_input_data.csv")
+input_data <- read_csv("transmission_fitting/data/STAN_input_data.csv")
 
 input_data <- input_data %>% filter(strain %ni% c('H07','MEW'), alive>0) %>% select(-isolate)
 
@@ -108,11 +107,11 @@ mod1_df <- data.frame(summary(fit_mod1_K)$summary[mod1_params,
                             c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod1_df$params <- rownames(mod1_df)
 
-write_csv(mod1_df,"output/mod1_params.csv")
-
-pdf("figures/mod1_K.pdf",height = 8, width = 16)
-plot_summary(mod = fit_mod1_K, nu_bars = mod1_params[c(1,3:12)], Cs = mod1_params[c(2,13:22)])
-dev.off()
+# write_csv(mod1_df,"transmission_fitting/output/mod1_params.csv")
+# 
+# pdf("transmission_fitting/figures/mod1_K.pdf",height = 8, width = 16)
+# plot_summary(mod = fit_mod1_K, nu_bars = mod1_params[c(1,3:12)], Cs = mod1_params[c(2,13:22)])
+# dev.off()
 
 fit_mod0_K <- rstan::stan(file = 'models/Mod0_S_K.stan',
                           data = df_M,
@@ -130,9 +129,9 @@ mod0_df <- data.frame(summary(fit_mod0_K)$summary[mod0_params,
 
 mod0_df$params <- rownames(mod0_df)
 
-# write_csv(mod0_df,"output/mod0_params.csv")
+# write_csv(mod0_df,"transmission_fitting/output/mod0_params.csv")
 # 
-# pdf("figures/mod0_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod0_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod0_K, nu_bars = mod0_params[1], Cs = mod0_params[2])
 # dev.off()
 
@@ -150,10 +149,10 @@ mod33_df <- data.frame(summary(fit_mod33_K)$summary[c(SNPV_mod3_params,MNPV_mod3
                                                   c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod33_df$params <- rownames(mod33_df)
 
-# write_csv(mod33_df,"output/mod33_params.csv")
+# write_csv(mod33_df,"transmission_fitting/output/mod33_params.csv")
 # 
 # 
-# pdf("figures/mod33_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod33_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod33_K, nu_bars = c(SNPV_mod3_params[c(1,3:7)],MNPV_mod3_params[c(1,3:7)]), Cs = c(SNPV_mod3_params[c(2,8:12)],MNPV_mod3_params[c(2,8:12)]))
 # dev.off()
 
@@ -169,9 +168,9 @@ mod55_df <- data.frame(summary(fit_mod55_K)$summary[c(SNPV_mod5_params,MNPV_mod5
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod55_df$params <- rownames(mod55_df)
 
-# write_csv(mod55_df,"output/mod55_params.csv")
+# write_csv(mod55_df,"transmission_fitting/output/mod55_params.csv")
 # 
-# pdf("figures/mod55_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod55_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod55_K, nu_bars = c(SNPV_mod5_params[c(1,2,5:9,15:19)],MNPV_mod5_params[c(1,2,5:9,15:19)]),
 #              Cs = c(SNPV_mod5_params[c(3:4,10:14,20:24)],MNPV_mod5_params[c(3:4,10:14,20:24)]))
 # dev.off()
@@ -187,9 +186,9 @@ mod66_df <- data.frame(summary(fit_mod66_K)$summary[c(SNPV_mod6_params,MNPV_mod6
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod66_df$params <- rownames(mod66_df)
 
-# write_csv(mod66_df,"output/mod66_params.csv")
+# write_csv(mod66_df,"transmission_fitting/output/mod66_params.csv")
 # 
-# pdf("figures/mod66_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod66_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod66_K, nu_bars = c(SNPV_mod6_params[c(1,4:8)],MNPV_mod6_params[c(1,4:8)]),
 #              Cs = c(SNPV_mod6_params[c(2,3,9:18)],MNPV_mod6_params[c(2,3,9:18)]))
 # dev.off()
@@ -207,9 +206,9 @@ mod77_df <- data.frame(summary(fit_mod77_K)$summary[c(SNPV_mod7_params,MNPV_mod7
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod77_df$params <- rownames(mod77_df)
 
-# write_csv(mod77_df,"output/mod77_params.csv")
+# write_csv(mod77_df,"transmission_fitting/output/mod77_params.csv")
 # 
-# pdf("figures/mod77_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod77_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod77_K, nu_bars = c(SNPV_mod7_params[c(1,2,4:8,14:18)],MNPV_mod7_params[c(1,2,4:8,14:18)]),
 #              Cs = c(SNPV_mod7_params[c(3,9:13)],MNPV_mod7_params[c(3,9:13)]))
 # dev.off()
@@ -228,9 +227,9 @@ mod35_df <- data.frame(summary(fit_mod35_K)$summary[c(SNPV_mod5_params,MNPV_mod3
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod35_df$params <- rownames(mod35_df)
 # 
-# write_csv(mod35_df,"output/mod35_params.csv")
+# write_csv(mod35_df,"transmission_fitting/output/mod35_params.csv")
 # 
-# pdf("figures/mod35_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod35_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod35_K, nu_bars = c(SNPV_mod5_params[c(1,2,5:9,15:19)],MNPV_mod3_params[c(1,3:7)]),
 #              Cs = c(SNPV_mod5_params[c(3:4,10:14,20:24)],MNPV_mod3_params[c(2,8:12)]))
 # dev.off()
@@ -249,9 +248,9 @@ mod36_df <- data.frame(summary(fit_mod36_K)$summary[c(MNPV_mod3_params,SNPV_mod6
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod36_df$params <- rownames(mod36_df)
 
-# write_csv(mod36_df,"output/mod36_params.csv")
+# write_csv(mod36_df,"transmission_fitting/output/mod36_params.csv")
 # 
-# pdf("figures/mod36_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod36_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod36_K, nu_bars = c(SNPV_mod6_params[c(1,4:8)],MNPV_mod3_params[c(1,3:7)]),
 #              Cs = c(SNPV_mod6_params[c(2,3,9:18)],MNPV_mod3_params[c(2,8:12)]))
 # dev.off()
@@ -270,9 +269,9 @@ mod37_df <- data.frame(summary(fit_mod37_K)$summary[c(MNPV_mod3_params,SNPV_mod7
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod37_df$params <- rownames(mod37_df)
 
-# write_csv(mod37_df,"output/mod37_params.csv")
+# write_csv(mod37_df,"transmission_fitting/output/mod37_params.csv")
 # 
-# pdf("figures/mod37_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod37_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod37_K, nu_bars = c(SNPV_mod7_params[c(1,2,4:8,14:18)],MNPV_mod3_params[c(1,3:7)]),
 #              Cs = c(SNPV_mod7_params[c(3,9:13)],MNPV_mod3_params[c(2,8:12)]))
 # dev.off()
@@ -292,9 +291,9 @@ mod53_df <- data.frame(summary(fit_mod53_K)$summary[c(MNPV_mod5_params,SNPV_mod3
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod53_df$params <- rownames(mod53_df)
 
-# write_csv(mod53_df,"output/mod53_params.csv")
+# write_csv(mod53_df,"transmission_fitting/output/mod53_params.csv")
 # 
-# pdf("figures/mod53_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod53_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod53_K, nu_bars = c(SNPV_mod3_params[c(1,3:7)],MNPV_mod5_params[c(1,2,5:9,15:19)]),
 #              Cs = c(SNPV_mod3_params[c(2,8:12)],MNPV_mod5_params[c(3:4,10:14,20:24)]))
 # dev.off()
@@ -313,9 +312,9 @@ mod63_df <- data.frame(summary(fit_mod63_K)$summary[c(MNPV_mod6_params,SNPV_mod3
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod63_df$params <- rownames(mod63_df)
 
-# write_csv(mod63_df,"output/mod63_params.csv")
+# write_csv(mod63_df,"transmission_fitting/output/mod63_params.csv")
 # 
-# pdf("figures/mod63_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod63_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod63_K, nu_bars = c(SNPV_mod3_params[c(1,3:7)],MNPV_mod6_params[c(1,4:8)]),
 #              Cs = c(SNPV_mod3_params[c(2,8:12)],MNPV_mod6_params[c(2,3,9:18)]))
 # dev.off()
@@ -334,9 +333,9 @@ mod73_df <- data.frame(summary(fit_mod73_K)$summary[c(MNPV_mod7_params,SNPV_mod3
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod73_df$params <- rownames(mod73_df)
 
-# write_csv(mod73_df,"output/mod73_params.csv")
+# write_csv(mod73_df,"transmission_fitting/output/mod73_params.csv")
 # 
-# pdf("figures/mod73_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod73_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod73_K, nu_bars = c(SNPV_mod3_params[c(1,3:7)],MNPV_mod7_params[c(1,2,4:8,14:18)]),
 #              Cs = c(SNPV_mod3_params[c(2,8:12)],MNPV_mod7_params[c(3,9:13)]))
 # dev.off()
@@ -356,9 +355,9 @@ mod56_df <- data.frame(summary(fit_mod56_K)$summary[c(MNPV_mod5_params,SNPV_mod6
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod56_df$params <- rownames(mod56_df)
 
-# write_csv(mod56_df,"output/mod56_params.csv")
+# write_csv(mod56_df,"transmission_fitting/output/mod56_params.csv")
 # 
-# pdf("figures/mod56_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod56_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod56_K, nu_bars = c(SNPV_mod6_params[c(1,4:8)],MNPV_mod5_params[c(1,2,5:9,15:19)]),
 #              Cs = c(SNPV_mod6_params[c(2,3,9:18)],MNPV_mod5_params[c(3:4,10:14,20:24)]))
 # dev.off()
@@ -377,9 +376,9 @@ mod57_df <- data.frame(summary(fit_mod57_K)$summary[c(MNPV_mod5_params,SNPV_mod7
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod57_df$params <- rownames(mod57_df)
 
-# write_csv(mod57_df,"output/mod57_params.csv")
+# write_csv(mod57_df,"transmission_fitting/output/mod57_params.csv")
 # 
-# pdf("figures/mod57_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod57_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod57_K, nu_bars = c(SNPV_mod7_params[c(1,2,4:8,14:18)],MNPV_mod5_params[c(1,2,5:9,15:19)]),
 #              Cs = c(SNPV_mod7_params[c(3,9:13)],MNPV_mod5_params[c(3:4,10:14,20:24)]))
 # dev.off()
@@ -398,9 +397,9 @@ mod65_df <- data.frame(summary(fit_mod65_K)$summary[c(MNPV_mod6_params,SNPV_mod5
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod65_df$params <- rownames(mod65_df)
 
-# write_csv(mod65_df,"output/mod65_params.csv")
+# write_csv(mod65_df,"transmission_fitting/output/mod65_params.csv")
 # 
-# pdf("figures/mod65_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod65_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod65_K, nu_bars = c(SNPV_mod5_params[c(1,2,5:9,15:19)],MNPV_mod6_params[c(1,4:8)]),
 #              Cs = c(SNPV_mod5_params[c(3:4,10:14,20:24)],MNPV_mod6_params[c(2,3,9:18)]))
 # dev.off()
@@ -419,9 +418,9 @@ mod75_df <- data.frame(summary(fit_mod75_K)$summary[c(MNPV_mod7_params,SNPV_mod5
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod75_df$params <- rownames(mod75_df)
 
-# write_csv(mod75_df,"output/mod75_params.csv")
+# write_csv(mod75_df,"transmission_fitting/output/mod75_params.csv")
 # 
-# pdf("figures/mod75_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod75_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod75_K, nu_bars = c(SNPV_mod5_params[c(1,2,5:9,15:19)],MNPV_mod7_params[c(1,2,4:8,14:18)]),
 #              Cs = c(SNPV_mod5_params[c(3:4,10:14,20:24)],MNPV_mod7_params[c(3,9:13)]))
 # dev.off()
@@ -434,16 +433,17 @@ fit_mod67_K <- rstan::stan(file = 'models/Mod67_SxMxT_K.stan',
                            refresh=0, control = list(adapt_delta = 0.95,
                                                      max_treedepth = 12)) 
 
-mo67_df <- data.frame(summary(fit_mod67_K)$summary[c(MNPV_mod6_params,SNPV_mod7_params),
+mod67_df <- data.frame(summary(fit_mod67_K)$summary[c(MNPV_mod6_params,SNPV_mod7_params),
                                                     c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
-mo67_df$params <- rownames(mo67_df)
+mod67_df$params <- rownames(mo67_df)
 
-# write_csv(mo67_df,"output/mod67_params.csv")
-# 
-# pdf("figures/mod67_K.pdf",height = 8, width = 16)
-# plot_summary(mod = fit_mod67_K, nu_bars = c(SNPV_mod7_params[c(1,2,4:8,14:18)],MNPV_mod6_params[c(1,4:8)]),
-#              Cs = c(SNPV_mod7_params[c(3,9:13)],MNPV_mod6_params[c(2,3,9:18)]))
-# dev.off()
+write_csv(mod67_df,"transmission_fitting/output/mod67_params.csv")
+
+pdf("transmission_fitting/figures/mod67_K.pdf",height = 8, width = 16)
+plot_summary(mod = fit_mod67_K, nu_bars = c(SNPV_mod7_params[c(1,2,4:8,14:18)],MNPV_mod6_params[c(1,4:8)]),
+             Cs = c(SNPV_mod7_params[c(3,9:13)],MNPV_mod6_params[c(2,3,9:18)]))
+dev.off()
+
 
 fit_mod76_K <- rstan::stan(file = 'models/Mod76_SxMxT_K.stan',
                            data = df_SxMxT_all,
@@ -453,15 +453,13 @@ fit_mod76_K <- rstan::stan(file = 'models/Mod76_SxMxT_K.stan',
                            refresh=0, control = list(adapt_delta = 0.95,
                                                      max_treedepth = 12)) 
 
-
-
 mod76_df <- data.frame(summary(fit_mod76_K)$summary[c(MNPV_mod7_params,SNPV_mod6_params),
                                                    c('mean','sd','se_mean','25%','75%','2.5%','97.5%')])
 mod76_df$params <- rownames(mod76_df)
 
-# write_csv(mod76_df,"output/mod76_params.csv")
+# write_csv(mod76_df,"transmission_fitting/output/mod76_params.csv")
 # 
-# pdf("figures/mod76_K.pdf",height = 8, width = 16)
+# pdf("transmission_fitting/figures/mod76_K.pdf",height = 8, width = 16)
 # plot_summary(mod = fit_mod76_K, nu_bars = c(SNPV_mod6_params[c(1,4:8)],MNPV_mod7_params[c(1,2,4:8,14:18)]),
 #              Cs = c(SNPV_mod6_params[c(2,3,9:18)],MNPV_mod7_params[c(3,9:13)]))
 # dev.off()
@@ -473,7 +471,7 @@ mod76_df$params <- rownames(mod76_df)
 #      fit_mod35_K,fit_mod53_K,
 #      fit_mod77_K,fit_mod66_K,fit_mod55_K,fit_mod33_K,fit_mod0_K,fit_mod1_K, file = "output/models_C2_2021.RData")
 # 
-# load("output/models_C2_2021_updated.RData")
+load("transmission_fitting/output/models_C2_2021_updated.RData")
 
 elpd_diffs <- loo_compare(loo(fit_mod0_K),
             loo(fit_mod1_K),
@@ -516,31 +514,31 @@ elpd_df <- merge(mod_list,elpd_df)
 
 elpd_df <- elpd_df %>% arrange(desc(elpd_diff))
 
-write_csv(elpd_df, "output/elpd_diff_df.csv")
-elpd_df <- read_csv("output/elpd_diff_df.csv")
+write_csv(elpd_df, "transmission_fitting/output/elpd_diff_df.csv")
+elpd_df <- read_csv("transmission_fitting/output/elpd_diff_df.csv")
 
 elpd_df_small <- elpd_df %>% select(mod_names,looic,se_looic)
 
 ###################
 
-# mod0_all <- read_csv("output/mod0_params.csv")
-# mod1_all <- read_csv("output/mod1_params.csv")
-# mod33_all <- read_csv("output/mod33_params.csv")
-# mod35_all <- read_csv("output/mod35_params.csv")
-# mod36_all <- read_csv("output/mod36_params.csv")
-# mod37_all <- read_csv("output/mod37_params.csv")
-# mod53_all <- read_csv("output/mod53_params.csv")
-# mod55_all <- read_csv("output/mod55_params.csv")
-# mod56_all <- read_csv("output/mod56_params.csv")
-# mod57_all <- read_csv("output/mod57_params.csv")
-# mod63_all <- read_csv("output/mod63_params.csv")
-# mod65_all <- read_csv("output/mod65_params.csv")
-# mod66_all <- read_csv("output/mod66_params.csv")
-# mod67_all <- read_csv("output/mod67_params.csv")
-# mod73_all <- read_csv("output/mod73_params.csv")
-# mod75_all <- read_csv("output/mod75_params.csv")
-# mod76_all <- read_csv("output/mod76_params.csv")
-# mod77_all <- read_csv("output/mod77_params.csv")
+# mod0_all <- read_csv("transmission_fitting/output/mod0_params.csv")
+# mod1_all <- read_csv("transmission_fitting/output/mod1_params.csv")
+# mod33_all <- read_csv("transmission_fitting/output/mod33_params.csv")
+# mod35_all <- read_csv("transmission_fitting/output/mod35_params.csv")
+# mod36_all <- read_csv("transmission_fitting/output/mod36_params.csv")
+# mod37_all <- read_csv("transmission_fitting/output/mod37_params.csv")
+# mod53_all <- read_csv("transmission_fitting/output/mod53_params.csv")
+# mod55_all <- read_csv("transmission_fitting/output/mod55_params.csv")
+# mod56_all <- read_csv("transmission_fitting/output/mod56_params.csv")
+# mod57_all <- read_csv("transmission_fitting/output/mod57_params.csv")
+# mod63_all <- read_csv("transmission_fitting/output/mod63_params.csv")
+# mod65_all <- read_csv("transmission_fitting/output/mod65_params.csv")
+# mod66_all <- read_csv("transmission_fitting/output/mod66_params.csv")
+# mod67_all <- read_csv("transmission_fitting/output/mod67_params.csv")
+# mod73_all <- read_csv("transmission_fitting/output/mod73_params.csv")
+# mod75_all <- read_csv("transmission_fitting/output/mod75_params.csv")
+# mod76_all <- read_csv("transmission_fitting/output/mod76_params.csv")
+# mod77_all <- read_csv("transmission_fitting/output/mod77_params.csv")
 # 
 # mod0_all <- mod0_all %>% mutate(mod_names = 'mod0')
 # mod1_all <- mod1_all %>% mutate(mod_names = 'mod1')
@@ -577,9 +575,9 @@ model_desc <- data.frame(model = c(0,1,3,5,6,7), desc = c('no isolates',
 
 #all_models_params <- merge(all_models_params,model_desc)
 
-write_csv(all_models_params,"output/all_model_params.csv")
+write_csv(all_models_params,"transmission_fitting/output/all_model_params.csv")
 
-all_models_params <- read_csv("output/all_model_params.csv")
+all_models_params <- read_csv("transmission_fitting/output/all_model_params.csv")
 
 ###################
 #
@@ -635,7 +633,7 @@ write_csv(elpd_df2, "output/elpd_diff_sse_df.csv")
 #
 ###################
 
-input_data <- read_csv("data/STAN_input_data.csv")
+input_data <- read_csv("transmission_fitting/data/STAN_input_data.csv")
 
 input_data <- input_data %>% filter(strain %ni% c('H07','MEW'), alive>0) %>% 
   select(-isolate) 
@@ -812,7 +810,7 @@ get_values <- function(mod_df){
 
 mod67_lines <- get_values(best_mod)
 
-plot("figures/transmission_best_model.pdf")
+pdf("figures/transmission_best_model.pdf",height = 6, width = 10)
 mod67_lines %>% ggplot() + geom_ribbon(aes(x = P0,ymin = q1, ymax = q2, fill = tree), alpha = 0.4) + 
   geom_line(aes(x = P0, y = FS, color = tree)) + 
   facet_grid(morph~tree) + 
@@ -928,4 +926,5 @@ iso_lines %>% ggplot() + geom_ribbon(aes(x = P0,ymin = b1, ymax = b2, fill = mor
   xlab(expression(paste("Initial pathogen density- cadavers per m^2"))) +
   scale_x_continuous(breaks = c(0,150,300))
 dev.off()
+
 

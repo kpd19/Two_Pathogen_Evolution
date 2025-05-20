@@ -22,24 +22,27 @@ plot_summary <- function(mod,nu_bars,Cs){
     poi <- c(nu_bars)
   }
   
+  color_scheme_set("brewer-Paired")
+  
   plt1 <- mcmc_trace(mod, pars = c('lp__',poi),
-                     np=np_mod)
+                     np=np_mod, n_warmup = 5000, window = c(5000,10000)) + 
+    theme_classic()
 
-  color_scheme_set("red")
-  plt2 <- mcmc_nuts_divergence(np_mod, lp_mod)
+  plt2 <- mcmc_nuts_divergence(np_mod, lp_mod) + 
+    theme_classic()
   
   rhats <- rhat(mod)
-  plt3 <- mcmc_rhat(rhats)
+  plt3 <- mcmc_rhat(rhats, alpha = 0.5)
+  
+  plt4 <- stan_hist(mod, pars = nu_bars, inc_warmup = FALSE, fill = '#a6cee3', alpha = 1)
   
   print(plt1)
   print(plt2)
   print(plt3)
-  
-  plt4 <- plot(mod, pars = nu_bars)
   print(plt4)
   
   if(is.na(Cs)[1] == FALSE){
-    plt5 <- plot(mod, pars = Cs) 
+    plt5 <- stan_hist(mod, pars = Cs, inc_warmup = FALSE, fill = '#a6cee3', alpha = 1)
     print(plt5)
   } else{
     print("no het")
