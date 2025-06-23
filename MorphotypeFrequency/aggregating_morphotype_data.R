@@ -1,8 +1,10 @@
 library(tidyverse)
 library(gridExtra)
+library(mgcv)
 
-site_inf <- read_csv("data/site_infection_data_2019-2020.csv")
-ll_data <- read_csv("data/literature_dist_data.csv")
+site_inf <- read_csv("morphotype_dist/data/site_infection_data_2019-2020.csv")
+ll_data <- read_csv("morphotype_dist/data/literature_dist_data.csv")
+pd_data <- read_csv("data/data_for_ll.csv")
 
 # calculating the infection totals for all the natural sites that weren't included in biopesticide spray projects
 site_inf_totals <- site_inf %>% filter(sprayed == FALSE) %>% group_by(state,latitude,longitude,site,year) %>%
@@ -18,40 +20,132 @@ site_inf_totals <- site_inf %>% filter(sprayed == FALSE) %>% group_by(state,lati
   mutate(frac_inf = sum_infected/sum_insect,
          dom = max(pMNPV,pSNPV), ndom = min(pMNPV,pSNPV)) %>% mutate(rat = ndom/dom)
 
+site_inf_totals %>% ungroup() %>% summarize(sum_coinf = sum(coinf),
+                                            sum_tk = sum(total_known),
+                                            sum_iso = sum(total_iso),
+                                            sum_MNPV = sum(MNPV),
+                                            sum_SNPV = sum(SNPV))
+
+ll_small <- pd_data %>% select(Site,Douglas_fir)
 # analysing coinfections
 
-mod1 <- glm(p_coinf ~ pMNPV, data = site_inf_totals, family = 'quasibinomial')
-mod2 <- glm(p_coinf ~ pSNPV, data = site_inf_totals, family = 'quasibinomial')
-mod3 <- glm(p_coinf ~ rat, data = site_inf_totals, family = 'quasibinomial')
-mod4 <- glm(p_coinf ~ 1, data = site_inf_totals, family = 'quasibinomial')
-summary(mod1)
-summary(mod2)
-summary(mod3)
-summary(mod4)
+site_inf_totals2 <- merge(site_inf_totals,pd_data,by.x = c('Site'), by.y = c('Site'))
 
-anova(mod1,mod4, test = "Chisq")
-anova(mod2,mod4, test = "Chisq")
-anova(mod3,mod4, test = "Chisq")
+crit <- 1.96
 
-pdf("figures/prop_coinf_ratio.pdf",height = 10, width = 10)
-plt1 <- site_inf_totals %>% ungroup() %>% mutate(pred = pSNPV*pMNPV) %>%
-  ggplot() + aes(x = rat,y = p_coinf) + geom_point() + theme_classic(base_size = 15) + 
-  xlab("Non-dominant morph: Dominant morph") + ylab("Prop. coinf") +
-  geom_smooth(method = 'glm')
-plt2 <- site_inf_totals %>% ungroup() %>% mutate(pred = pSNPV*pMNPV) %>%
-  ggplot() + aes(x = frac_inf,y = p_coinf) + geom_point() + theme_classic(base_size = 15) + 
-  xlab("Fraction infected") + ylab("Prop. coinf") +
-  geom_smooth(method = 'glm')
-plt3 <- site_inf_totals %>% ungroup() %>% mutate(pred = pSNPV*pMNPV) %>%
-  ggplot() + aes(x = pSNPV,y = p_coinf) + geom_point() + theme_classic(base_size = 15) + 
-  xlab("pSNPV") + ylab("Prop. coinf") +
-  geom_smooth(method = 'gam')
-plt4 <- site_inf_totals %>% ungroup() %>% mutate(pred = pSNPV*pMNPV) %>%
-  ggplot() + aes(x = pMNPV,y = p_coinf) + geom_point() + theme_classic(base_size = 15) + 
-  xlab("pMNPV") + ylab("Prop. coinf") +
-  geom_smooth(method = 'gam')
+mod1 <- glm(p_coinf ~ rat, data = site_inf_totals2, family = 'quasibinomial')
 
-grid.arrange(plt1,plt2,plt3,plt4,nrow=2)
+x1 <- seq(0,0.84,0.01)
+pred1 <- predict.glm(mod1, newdata = data.frame(rat = x1), type = 'response', se.fit = TRUE)
+df1 <- data.frame(rat = x1, y = pred1$fit, se = pred1$se.fit)
+df1 <- df1 %>% mutate(upper = y + 1.96*se,
+                     lower = y - 1.96*se)
+p1 <- summary(mod1)$coefficients[2,4]
+
+plt1 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df1, aes(x = rat, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(x = rat,y = p_coinf), size = 2) + theme_classic(base_size = 15) + 
+  xlab("Non-dominant:Dominant") + ylab("Proportion Coinfected") +
+  geom_line(data = df1, aes(x = rat, y = y), color = 'blue', size = 1.25)     + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p1,6)), hjust = -0.15, vjust = 1)
+
+mod2 <- glm(p_coinf ~ frac_inf, data = site_inf_totals, family = 'quasibinomial')
+
+x2 <- seq(0.11,0.61,0.01)
+pred2 <- predict.glm(mod2, newdata = data.frame(frac_inf = x2), type = 'response', se.fit = TRUE)
+df2 <- data.frame(frac_inf = x2, y = pred2$fit, se = pred2$se.fit)
+df2 <- df2 %>% mutate(upper = y + 1.96*se,
+                      lower = y - 1.96*se)
+p2 <- summary(mod2)$coefficients[2,4]
+
+plt2 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df2, aes(x = frac_inf, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(x = frac_inf,y = p_coinf), size = 2) + theme_classic(base_size = 15) + 
+  xlab("Fraction Infected") + ylab("Proportion Coinfected") +
+  geom_line(data = df2, aes(x = frac_inf, y = y), color = 'blue', size = 1.25)    + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p2,3)), hjust = -0.15, vjust = 1)
+
+mod3 <- gam(p_coinf ~ s(pMNPV, k = 4), data = site_inf_totals)
+
+x3 <- seq(0,1,0.01)
+pred3 <- predict.gam(mod3, newdata = data.frame(pMNPV = x3), type = 'response', se.fit = TRUE)
+df3 <- data.frame(pMNPV = x3, y = pred3$fit, se = pred3$se.fit)
+df3 <- df3 %>% mutate(upper = y + 1.96*se,
+                      lower = y - 1.96*se)
+p3 <- summary(mod3)$s.table[,4]
+
+plt3 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df3, aes(x = pMNPV, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(x = pMNPV,y = p_coinf), size = 2) + theme_classic(base_size = 15) + 
+  xlab("Fraction Infected") + ylab("Proportion Coinfected") +
+  geom_line(data = df3, aes(x = pMNPV, y = y), color = 'blue', size = 1.25)   + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p3,3)), hjust = -0.15, vjust = 1)
+
+mod4 <- gam(p_coinf ~ s(pSNPV, k = 4), data = site_inf_totals)
+
+x4 <- seq(0,1,0.01)
+pred4 <- predict.gam(mod4, newdata = data.frame(pSNPV = x4), type = 'response', se.fit = TRUE)
+df4 <- data.frame(pSNPV = x4, y = pred4$fit, se = pred4$se.fit)
+df4 <- df4 %>% mutate(upper = y + 1.96*se,
+                      lower = y - 1.96*se)
+p4 <- summary(mod4)$s.table[,4]
+
+plt4 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df4, aes(x = pSNPV, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(x = pSNPV,y = p_coinf), size = 2) + theme_classic(base_size = 15) + 
+  xlab("Fraction Infected") + ylab("Proportion Coinfected") +
+  geom_line(data = df4, aes(x = pSNPV, y = y), color = 'blue', size = 1.25)    + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p4,3)), hjust = -0.15, vjust = 1)
+
+mod5 <- glm(frac_inf ~ rat, data = site_inf_totals2, family = 'quasibinomial')
+
+x5 <- seq(0,0.84,0.01)
+pred5 <- predict.glm(mod5, newdata = data.frame(rat = x5), type = 'response', se.fit = TRUE)
+df5 <- data.frame(rat = x5, y = pred5$fit, se = pred5$se.fit)
+df5 <- df5 %>% mutate(upper = y + 1.96*se,
+                      lower = y - 1.96*se)
+
+p5 <- summary(mod5)$coefficients[2,4]
+
+plt5 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df5, aes(x = rat, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(y = frac_inf,x = rat)) + theme_classic(base_size = 15) + 
+  ylab("Fraction infected") + xlab("Non-dominant:Dominant") +
+  geom_line(data = df5, aes(x = rat, y = y), color = 'blue', size = 1.25)   + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p5,3)), hjust = -0.15, vjust = 1)
+
+mod6 <- glm(p_coinf ~ Douglas_fir, data = site_inf_totals2, family = 'quasibinomial')
+
+x6 <- seq(0,1,0.01)
+pred6 <- predict.glm(mod6, newdata = data.frame(Douglas_fir = x6), type = 'response', se.fit = TRUE)
+df6 <- data.frame(Douglas_fir = x6, y = pred6$fit, se = pred6$se.fit)
+df6 <- df6 %>% mutate(upper = y + 1.96*se,
+                      lower = y - 1.96*se)
+
+p6 <- summary(mod6)$coefficients[2,4]
+
+plt6 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>% 
+  ggplot() +
+  geom_ribbon(data = df6, aes(x = Douglas_fir, ymin = lower, ymax = upper),
+              fill = 'blue', alpha = 0.25, linetype = 'dashed', color = 'grey55')+
+  geom_point(aes(x = Douglas_fir,y = p_coinf), size = 2) + theme_classic(base_size = 15) + 
+  xlab("Proportion Douglas-fir") + ylab("Proportion Coinfected") +
+  geom_line(data = df6, aes(x = Douglas_fir, y = y), color = 'blue', size = 1.25) + 
+  annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p6,3)), hjust = -0.15, vjust = 1)
+
+
+pdf("morphotype_dist/figures/prop_coinf_ratio.pdf",height = 8, width = 12)
+grid.arrange(plt2, plt1,plt5,plt6, plt3,plt4,nrow=2)
 dev.off()
 
 site_summary <- site_inf_totals %>% filter(total_iso >0) %>% arrange(Site) %>%
@@ -61,4 +155,4 @@ site_summary$site_no <- 111:128
 
 ll_data <- rbind(ll_data,site_summary)
 
-write_csv(ll_data, "data/morphotye_distribution_data.csv")
+write_csv(ll_data, "morphotype_dist/data/morphotye_distribution_data.csv")
