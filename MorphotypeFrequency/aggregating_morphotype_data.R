@@ -2,8 +2,8 @@ library(tidyverse)
 library(gridExtra)
 library(mgcv)
 
-site_inf <- read_csv("morphotype_dist/data/site_infection_data_2019-2020.csv")
-ll_data <- read_csv("morphotype_dist/data/literature_dist_data.csv")
+site_inf <- read_csv("MorphotypeFrequency/data/site_infection_data_2019-2020.csv")
+ll_data <- read_csv("MorphotypeFrequency/data/literature_dist_data.csv")
 pd_data <- read_csv("data/data_for_ll.csv")
 
 # calculating the infection totals for all the natural sites that weren't included in biopesticide spray projects
@@ -144,7 +144,7 @@ plt6 <- site_inf_totals2 %>% ungroup() %>% filter(sum_infected >0) %>%
   annotate(geom = 'text', x = -Inf, y = Inf, label =  paste0("P-val = ", round(p6,3)), hjust = -0.15, vjust = 1)
 
 
-pdf("morphotype_dist/figures/prop_coinf_ratio.pdf",height = 8, width = 12)
+pdf("MorphotypeFrequency/figures/prop_coinf_ratio.pdf",height = 8, width = 12)
 grid.arrange(plt2, plt1,plt5,plt6, plt3,plt4,nrow=2)
 dev.off()
 
@@ -155,4 +155,4 @@ site_summary$site_no <- 111:128
 
 ll_data <- rbind(ll_data,site_summary)
 
-write_csv(ll_data, "morphotype_dist/data/morphotye_distribution_data.csv")
+write_csv(ll_data, "MorphotypeFrequency/data/morphotye_distribution_data.csv")
