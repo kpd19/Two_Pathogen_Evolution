@@ -2,10 +2,10 @@ library(tidyverse)
 library(gridExtra)
 library(mgcv)
 
-site_inf <- read_csv("morphotype_dist/data/site_infection_data_2019-2020.csv")
-ll_data <- read_csv("morphotype_dist/data/literature_dist_data.csv")
-pd_data <- read_csv("morphotype_dist/data/forest_composition_wide.csv")
-tree_sp <- read_csv("morphotype_dist/tree_polygons/tree_sp_df.csv")
+site_inf <- read_csv("MorphotypeFrequency/data/site_infection_data_2019-2020.csv")
+ll_data <- read_csv("MorphotypeFrequency/data/literature_dist_data.csv")
+pd_data <- read_csv("MorphotypeFrequency/data/forest_composition_wide.csv")
+tree_sp <- read_csv("MorphotypeFrequency/tree_polygons/tree_sp_df.csv")
 
 # calculating the infection totals for all the natural sites that weren't included in biopesticide spray projects
 site_inf_totals <- site_inf %>% filter(sprayed == FALSE) %>% group_by(state,latitude,longitude,site,year) %>%
@@ -165,7 +165,7 @@ site_summary$site_no <- 111:128
 
 ll_data <- rbind(ll_data,site_summary)
 
-write_csv(ll_data, "morphotype_dist/data/morphotye_distribution_data.csv")
+write_csv(ll_data, "MorphotypeFrequency/data/morphotye_distribution_data.csv")
 
 head(ll_data)
 head(pd_data)
@@ -187,7 +187,7 @@ site3 <- ll_data2 %>% ggplot() + aes(x = Douglas_fir*100) + geom_histogram(bins 
 site4 <- ll_data2 %>% ggplot() + aes(x = state) + geom_bar() + theme_classic(base_size = 15) + 
   xlab("State") + ylab("# Sites")
 
-pdf("morphotype_dist/figures/site_info.pdf", height = 5, width = 15)
+pdf("MorphotypeFrequency/figures/site_info.pdf", height = 5, width = 15)
 grid.arrange(site1,site2,site3,site4,nrow = 1)
 dev.off()
 
@@ -195,7 +195,7 @@ pd_long <- pd_data %>% pivot_longer(colnames(pd_data)[11:38])
 
 pd_long <- merge(pd_long,tree_sp)
 
-pdf("morphotype_dist/figures/dist_tree_sp_by_sp.pdf",height = 10, width = 10)
+pdf("MorphotypeFrequency/figures/dist_tree_sp_by_sp.pdf",height = 10, width = 10)
 pd_long %>% ggplot() + aes(x = site_no, y = value, fill = genus) + geom_bar(stat = 'identity', position = 'stack') + 
   theme_classic(base_size = 9) + 
   facet_wrap(~name,nrow = 7) + 
@@ -211,7 +211,7 @@ prop_dataset <- prop_dataset %>%
 
 prop_dataset$name <- factor(prop_dataset$name, levels = prop_dataset$name)
 
-pdf("morphotype_dist/figures/tree_prop.pdf")
+pdf("MorphotypeFrequency/figures/tree_prop.pdf")
 prop_dataset %>% ggplot() + aes(x = name, y = mean_p*100, fill = genus) + geom_bar(stat = 'identity') + 
   theme_classic() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
