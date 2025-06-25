@@ -24,59 +24,83 @@ find_peaks2 <- function (x, m = 1, thresh=1){
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
 
-host_pop <- read_csv("AnalyzeSimulations/data/host_population_single_path.csv")
-nu_pop <- read_csv("AnalyzeSimulations/data/transmission_risk_single_path.csv")
+trio <- read_csv('AnalyzeSimulations/data/single_pathogen.csv')
 
-plt1 <- nu_pop %>% filter(rep <= 1, pdoug %in% c(2,7,18,30,35), Species == 'nu1', Year >= 50, Year <=100) %>%
-  ggplot() + aes(x = Year, y = Column1, color = type) + 
+trio_long <- trio %>% select(Year,S,nu1,nu2,fecundity,type,rep,pdoug) %>% pivot_longer(cols = c('S','nu1','nu2','fecundity'))
+
+trio_long <- trio_long %>% mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",'13' = '35% Douglas-fir',
+                                                '18' = '50% Douglas-fir', '24' = '65% Douglas-fir', 
+                                                '30' = '80% Douglas-fir', '35' = '95% Douglas-fir')) %>% 
+  mutate(pd = factor(pd, levels = c('5% Douglas-fir', "20% Douglas-fir", '35% Douglas-fir',
+                                    '50% Douglas-fir', '65% Douglas-fir', 
+                                    '80% Douglas-fir', '95% Douglas-fir')))
+
+single_path <- trio_long
+
+rp_pick <- 2
+
+plt1 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name == 'nu1', Year >= 160, Year <=200) %>%
+  ggplot() + aes(x = Year, y = value, color = type) + 
   geom_line() + theme_classic(base_size = 15) + 
   scale_y_log10() + 
   facet_wrap(~pd,nrow=1) + 
   ggtitle("Single-capsid morphotype") + 
-  ylab(expression(log[10] ~ "Mean Infectiousness"))+
-  scale_color_manual("", values = c("Both pathogens" = "forestgreen", 'SNPV only' = snpv_col)) +
+  ylab("Average Infectiousness")+
+  scale_color_manual("", values = c("Both pathogens" = "forestgreen", 'Single-capsid morphotype only' = snpv_col)) +
   theme(legend.position = 'none')
 
-plt2 <- nu_pop %>% filter(rep <= 1, pdoug %in% c(2,7,18,30,35), Species == 'nu1') %>%
-  ggplot() + aes(x = Year, y = Column1, fill = type) + 
+plt2 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name == 'nu1') %>%
+  ggplot() + aes(x = Year, y = value, color = type) + 
   geom_boxplot(alpha = 0.75) + theme_classic(base_size = 15) + 
   scale_y_log10() + 
   facet_wrap(~pd,nrow=1) + 
-  ylab(expression(log[10] ~ "Mean Infectiousness"))+
-  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", 'SNPV only' = snpv_col)) + 
+  ylab("Average Infectiousness")+
+  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", 'Single-capsid morphotype only' = snpv_col)) + 
   scale_x_continuous(breaks = c(55,145), labels = c('Both',"SNPV only")) + 
   theme(axis.title.x = element_blank())
 
-plt3 <- nu_pop %>% filter(rep <= 1, pdoug %in% c(2,7,18,30,35), Species == 'nu2', Year >= 50, Year <=100) %>%
-  ggplot() + aes(x = Year, y = Column1, color = type) + 
+plt3 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name == 'nu2', Year >= 160, Year <=200) %>%
+  ggplot() + aes(x = Year, y = value, color = type) + 
   geom_line() + theme_classic(base_size = 15) + 
   scale_y_log10() + 
   facet_wrap(~pd,nrow=1) + 
   ggtitle("Multi-capsid morphotype") + 
-  ylab(expression(log[10] ~ "Mean Infectiousness"))+
-  scale_color_manual("", values = c("Both pathogens" = "forestgreen", "MNPV only" = mnpv_col)) +
+  ylab("Average Infectiousness")+
+  scale_color_manual("", values = c("Both pathogens" = "forestgreen", "Multi-capsid morphotype only" = mnpv_col)) +
   theme(legend.position = 'none')
 
-plt4 <- nu_pop %>% filter(rep <= 1, pdoug %in% c(2,7,18,30,35), Species == 'nu2') %>%
-  ggplot() + aes(x = Year, y = Column1, fill = type) + 
+plt4 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name == 'nu2') %>%
+  ggplot() + aes(x = Year, y = value, fill = type) + 
   geom_boxplot(alpha = 0.75) + theme_classic(base_size = 15) + 
   scale_y_log10() + 
   facet_wrap(~pd,nrow=1) + 
-  ylab(expression(log[10] ~ "Mean Infectiousness"))+
-  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", "MNPV only" = mnpv_col)) +
+  ylab("Average Infectiousness")+
+  scale_color_manual("", values = c("Both pathogens" = "forestgreen", "Multi-capsid morphotype only" = mnpv_col)) +
   scale_x_continuous(breaks = c(55,145), labels = c('Both',"MNPV only")) + 
   theme(axis.title.x = element_blank())
 
-plt5 <- nu_pop %>% filter(rep <= 1, pdoug %in% c(2,7,18,30,35), Species %in% c('nu1','nu2')) %>%
-  ggplot() + aes(x = Species, y = Column1, fill = type, group = interaction(type,Species)) + 
+plt5 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name %in% c('nu1','nu2')) %>%
+  ggplot() + aes(x = name, y = value, fill = type, group = interaction(type,name)) + 
   geom_boxplot(alpha = 0.75, outliers = FALSE) + theme_classic(base_size = 15) + 
   scale_y_log10() + 
   facet_wrap(~pd,nrow=1) + 
-  ylab(expression(log[10] ~ "Mean Infectiousness"))+
-  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", "MNPV only" = mnpv_col, 'SNPV only' = snpv_col)) +
+  ylab("Average Infectiousness")+
+  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", "Multi-capsid morphotype only" = mnpv_col,
+                                   'Single-capsid morphotype only' = snpv_col)) +
   scale_x_discrete(labels = c("SNPV",'MNPV')) + 
-  theme(axis.title.x = element_blank()) +
-  theme(legend.position = 'bottom')
+  theme(axis.title.x = element_blank(),
+        legend.position = 'bottom') 
+
+plt6 <- single_path %>% filter(rep == rp_pick, pdoug %in% c(2,7,18,30,35), name == 'fecundity', Year >= 50, Year <=200) %>%
+  ggplot() + aes(x = type, y = value, fill = type, group = type) + 
+  geom_boxplot(alpha = 0.75, outliers = FALSE) + theme_classic(base_size = 15) + 
+  scale_y_log10() + 
+  facet_wrap(~pd,nrow=1) + 
+  ylab("Fecundity") +
+  scale_fill_manual("", values = c("Both pathogens" = "forestgreen", "Multi-capsid morphotype only" = mnpv_col,
+                                   'Single-capsid morphotype only' = snpv_col)) +
+  scale_x_discrete(labels = c('Both',"MNPV\nonly",'SNPV\nonly')) + 
+  theme(axis.title.x = element_blank())
 
 pdf("AnalyzeSimulations/figures/single_path_nu_bar.pdf",height = 10, width = 10)
 grid.arrange(plt1,plt3,plt5,nrow=3,heights = c(1,1,1.1))
@@ -84,14 +108,15 @@ dev.off()
 
 a.time <- Sys.time()
 
+host_pop <- single_path %>% filter(name == "S")
 sim_types <- unique(host_pop$type)
 
 all_amps <- c()
 all_periods <- c()
 all_peaks <- c()
 for(s in 1:length(sim_types)){
-  mini_S <- host_pop %>% filter(Species == "S", Year >= 50, Year <= 200, rep <= 20, type == sim_types[s]) %>%
-    mutate(logP = log10(Column1)) %>% select(Year,logP,rep,pdoug)
+  mini_S <- host_pop %>% filter(Year >= 50, Year <= 200, rep <= 20, type == sim_types[s]) %>%
+    mutate(logP = log10(value)) %>% select(Year,logP,rep,pdoug)
   
   periods_S <- c()
   amps_S <- c()
@@ -156,15 +181,6 @@ for(s in 1:length(sim_types)){
 b.time <- Sys.time()
 print(b.time-a.time)
 
-write_csv(all_amps,"AnalyzeSimulations/data/normal_amps_S.csv")
-write_csv(all_periods,"AnalyzeSimulations/data/normal_periods_S.csv")
-write_csv(all_peaks,"AnalyzeSimulations/data/normal_peaks_S.csv")
-
-all_peaks <- all_peaks %>% mutate(type = recode(type, "no SNPV" = 'Multi-capsid morphotype only', "no MNPV" = "Single-capsid morphotype only", "normal" = "Both pathogens"))
-
-snpv_col <- "#ee8800"
-mnpv_col <-'#5D65C5'
-
 all_peaks <- all_peaks %>% filter(pdoug %in% c(2,7,13,18,24,30,35)) %>%
   mutate(pd = recode(pdoug, '2' = '5% Douglas-fir', '7' = "20% Douglas-fir",'13' = '35% Douglas-fir',
                      '18' = '50% Douglas-fir', '24' = '65% Douglas-fir', 
@@ -179,10 +195,49 @@ pdf("AnalyzeSimulations/figures/host_peaks.pdf",height = 6, width = 10)
 all_peaks %>% 
   ggplot() + aes(x = pdoug/37*100, y = peak, group=interaction(pdoug,type),fill = type) +
   geom_boxplot(alpha = 0.75, outliers = FALSE, width = 8) + theme_classic(base_size = 15) + 
-  ylab(expression(log[10] ~ "Peak Host Population Size")) +
+  ylab(expression(log[10] ~ "Peak Host Density")) +
   scale_fill_manual("", values = c("Both pathogens" = "forestgreen", 'Single-capsid morphotype only' = snpv_col,
                                    "Multi-capsid morphotype only" = mnpv_col)) + 
   xlab("% Douglas-fir") + 
   theme(legend.position = 'top')
 dev.off()
+
+
+
+
+find_peaks2 <- function (x, m = 1, thresh=1){
+  shape <- diff(sign(diff(x, na.pad = FALSE)))
+  pks <- sapply(which(shape < 0), FUN = function(i){
+    z <- i - m + 1
+    z <- ifelse(z > 0, z, 1)
+    w <- i + m + 1
+    w <- ifelse(w < length(x), w, length(x))
+    if(all(x[c(z : i, (i + 2) : w)] <= x[i + 1])) return(i + 1) else return(numeric(0))
+  })
+  pks <- unlist(pks)
+  
+  if (!missing(thresh)) {
+    pks <- pks[which(x[pks]>=thresh)]
+  }
+  else pks
+  
+  return(pks)
+}
+
+x <- seq(0,50,0.1) # x is your time, but you don't really need it except to plot
+y <- sin(x)*3 # y is your time series, so probably comparejulia[comparejulia$tree == "Trembling Aspen",]$host
+
+plot(x,y)
+
+time_of_peak <- find_peaks2(y,m=2) # finds the locations of the peaks in the array
+amplitudes <- y[time_of_peak] # finds the actual peak values
+periods <- diff(time_of_peak) # this works because every time step of yours is a year
+
+avg_period = mean(periods)
+avg_amp <- mean(amplitudes)
+avg_pop = mean(y)
+
+
+
+
 
