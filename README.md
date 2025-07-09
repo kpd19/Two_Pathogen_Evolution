@@ -56,6 +56,6 @@ To explore the effects of dispersal of first instars on the eco-evolutionary mod
 
 ## Generalist Predator
 
-The `GeneralistPredator` directory includes the script to run the model with the best parameter set with the inclusion of a generalist predator, `ode_rlzns_predator.jl`. The script `generalist_predators.R` analyzes the example simulation data for high and low attack rates and computes the % multi-capsid morphotype for varying rates of maximum fraction killed (a) and the hsot population density at which the fraction killed is maximized (&omega;). ${\color{DarkOrchid}{\textbf{Figures 19 in SI}}}$
+The `GeneralistPredator` directory includes the script to run the model with the best parameter set with the inclusion of a generalist predator, `ode_rlzns_predator.jl`. The script `generalist_predators.R` analyzes the example simulation data for high and low attack rates and computes the % multi-capsid morphotype for varying rates of maximum fraction killed (a) and the hsot population density at which the fraction killed is maximized (&omega;). ${\color{DarkOrchid}{\textbf{Figure 19 in SI}}}$
 
 
