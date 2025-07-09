@@ -42,6 +42,8 @@ The script `non_evolution_simulations.R` plots the host and two pathogen dynamic
 
 The script `vary_phi.R` plots the dynamics and variation in morphotype frequency when the overwintering rate of the pathogen (&phi;) is varied. The file `phi_pmnpv.csv` is the frequency of the multi-capsid morphotype over varying Douglas-fir frequencies and the file `phi_dynamics.csv` are example dynamics across the range of &phi;. [<code style="color : gold">Figures 1</code>]
 
+${\color{Red}Red}}$
+
 ## Biocontrol
 
 The `Biocontrol` directory contains scripts to analyze the effects of using virus as a biocontrol on host population and transmission risk. The script biocontrol.jl creates simulations for a range of biocontrol levels at different probabilities of spraying and thresholds for cases with varying amounts of each morphotype as biocontrol. The script `biocontrol_comparison.R` analyzes the different levels and thresholds. The script `biocontrol_freq.R` analzes the effects on transmission risk and host population sizes when the likelihood of spraying is varied. 
