@@ -42,7 +42,7 @@ The script `non_evolution_simulations.R` plots the host and two pathogen dynamic
 
 The script `vary_phi.R` plots the dynamics and variation in morphotype frequency when the overwintering rate of the pathogen (&phi;) is varied. The file `phi_pmnpv.csv` is the frequency of the multi-capsid morphotype over varying Douglas-fir frequencies and the file `phi_dynamics.csv` are example dynamics across the range of &phi;. [<code style="color : gold">Figures 1</code>]
 
-${\color{Red}Red}$
+${\color{Red}\texttt{Figure X in SI}}$
 
 ## Biocontrol
 
