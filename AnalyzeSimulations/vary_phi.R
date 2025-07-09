@@ -1,11 +1,7 @@
 library(tidyverse)
 
-phi <- read_csv("/Volumes/My Book/Spatial_DFTM_modeling/Julia_sims/cycle_test/vary_phi_all.csv")
-phi2 <- read_csv("/Volumes/My Book/Spatial_DFTM_modeling/Julia_sims/cycle_test/vary_phi2_all.csv")
-
-phi <- rbind(phi,phi2)
-
-phi_lls <- read_csv("/Volumes/My Book/Spatial_DFTM_modeling/Julia_sims/cycle_test/vary_phi_many_ll.csv")
+phi_pmnpv_2k <- read_csv("AnalyzeSimulations/data/phi_pmnpv.csv")
+phi_dynamics <- read_csv("AnalyzeSimulations/data/phi_dynamics.csv")
 
 ll_data <- read_csv("data/data_for_ll.csv")
 field_data_round <- ll_data %>% mutate(round_pd = round(Douglas_fir*9)/9) %>% group_by(round_pd) %>% 
@@ -19,21 +15,6 @@ field_data_round <- ll_data %>% mutate(round_pd = round(Douglas_fir*9)/9) %>% gr
             sd_tree = sd(n_trees)) %>% 
   mutate(se_pMNPV = sd_pMNPV/sqrt(len),
          se_pd = sd_pd/sqrt(len))
-
-id1 <- ll_data %>% filter(n_trees %in% 1:36) %>%
-  arrange(n_trees) %>% group_by(n_trees) %>%
-  mutate(n = seq(1,length(total))) %>% filter(n == 1) %>% pull(id)
-
-size_pick <- 6
-
-q1 <- 0.025
-q2 <- 0.975
-
-phi_lls <- phi_lls %>% filter(id %in% id1) %>% select(quality,pdoug,mean_pMNPV,phi)
-
-write_csv(phi_lls, "AnalyzeSimulations/data/phi_pmnpv.csv")
-
-phi_pmnpv_2k <- read_csv("AnalyzeSimulations/data/phi_pmnpv.csv")
 
 phi_avg <- phi_pmnpv_2k %>% filter(quality == 1) %>% group_by(pdoug,phi) %>%
   summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
@@ -61,12 +42,6 @@ dev.off()
 
 snpv_col <- "#ee8800"
 mnpv_col <-'#5D65C5'
-
-phi <- phi %>% filter(pdoug %in% c(2,7,18,30,35), rep == 9)
-
-write_csv(phi,"AnalyzeSimulations/data/phi_dynamics.csv")
-
-phi_dynamics <- read_csv("AnalyzeSimulations/data/phi_dynamics.csv")
 
 pdf("AnalyzeSimulations/figures/cycles_phi_pd.pdf",height = 15, width = 10)
 phi_dynamics %>% filter(pdoug %in% c(2,7,18,30,35),rep == 9, Year >= 130, Year <= 170, phi <= 90) %>% select(Year,Z1, Z2, S,pdoug,phi,rep) %>% 
