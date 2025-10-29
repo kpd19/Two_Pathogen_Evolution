@@ -8,8 +8,6 @@ library(geodata)
 
 # British Columbia and US State data:
 
-setwd('/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/morphotype_dist/')
-
 latlong <- read_csv("data/morphotye_distribution_data.csv")
 latlong$total2 <- latlong$SNPV + latlong$MNPV
 
@@ -21,20 +19,8 @@ us_data = gadm(country="USA", level = 1, path = tempdir())
 state_data = us_data[us_data$NAME_1 %in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona", "New Mexico", "Utah", "Colorado","Montana","Wyoming"), ]
 state_data = st_as_sf(state_data)
 
-mex_data = gadm(country="MEX", level = 1, path = tempdir())
-state_data = us_data[us_data$NAME_1 %in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona", "New Mexico", "Utah", "Colorado","Montana","Wyoming"), ]
-state_data = st_as_sf(state_data)
-
 st_crs(bc_data) <- NA
 st_crs(state_data) <- NA
-
-# canada_data <- st_read("/Volumes/My Book/Synchrony/spatial/gadm41_CAN_shp/gadm41_CAN_1.shp")
-# canada_data <- canada_data %>% filter(NAME_1 %in% c("British Columbia",'Alberta', 'Saskatchewan'))
-# 
-# us_data <- st_read("/Volumes/My Book/Synchrony/spatial/gadm41_USA_shp/gadm41_USA_1.shp")
-# us_data <- us_data %>% filter(NAME_1%in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona",
-#                                            "New Mexico", "Utah", "Colorado","Montana","Wyoming",
-#                                            "North Dakota",'South Dakota','Nebraska','Texas'))
 
 # Tree Species data:
 
