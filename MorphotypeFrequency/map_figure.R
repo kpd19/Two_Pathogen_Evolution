@@ -8,18 +8,33 @@ library(geodata)
 
 # British Columbia and US State data:
 
+setwd('/Users/katherinedixon/Documents/StuffINeed/_Research/Two_Pathogen_Evolution/morphotype_dist/')
+
 latlong <- read_csv("data/morphotye_distribution_data.csv")
 latlong$total2 <- latlong$SNPV + latlong$MNPV
 
-mapcols = c("#5E8D70", "#B1B27A")
-
 canada_data = gadm(country="CAN", level = 1, path = tempdir())
-bc_data = canada_data[canada_data$NAME_1 == "British Columbia", ]
+bc_data = canada_data[canada_data$NAME_1 %in% c("British Columbia",'Alberta','Saskatchewan'), ]
 bc_data =st_as_sf(bc_data)
 
 us_data = gadm(country="USA", level = 1, path = tempdir())
 state_data = us_data[us_data$NAME_1 %in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona", "New Mexico", "Utah", "Colorado","Montana","Wyoming"), ]
 state_data = st_as_sf(state_data)
+
+mex_data = gadm(country="MEX", level = 1, path = tempdir())
+state_data = us_data[us_data$NAME_1 %in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona", "New Mexico", "Utah", "Colorado","Montana","Wyoming"), ]
+state_data = st_as_sf(state_data)
+
+st_crs(bc_data) <- NA
+st_crs(state_data) <- NA
+
+# canada_data <- st_read("/Volumes/My Book/Synchrony/spatial/gadm41_CAN_shp/gadm41_CAN_1.shp")
+# canada_data <- canada_data %>% filter(NAME_1 %in% c("British Columbia",'Alberta', 'Saskatchewan'))
+# 
+# us_data <- st_read("/Volumes/My Book/Synchrony/spatial/gadm41_USA_shp/gadm41_USA_1.shp")
+# us_data <- us_data %>% filter(NAME_1%in% c("Washington", "Oregon", "Idaho", "California", "Nevada", "Arizona",
+#                                            "New Mexico", "Utah", "Colorado","Montana","Wyoming",
+#                                            "North Dakota",'South Dakota','Nebraska','Texas'))
 
 # Tree Species data:
 
@@ -54,7 +69,7 @@ red_fir <- red_fir %>% rename(sp1 = 'ABIEMAGN_',sp2 = 'ABIEMAGN_I' ) %>% mutate(
 firs_int <- rbind(douglas_fir,grand_fir, white_fir,subalpine_fir,pacific_silver,
                   red_fir)
 firs_int <- firs_int %>% filter(CODE == 1)
-firs_int <- firs_int %>% sf::st_set_crs(4326)
+#firs_int <- firs_int %>% sf::st_set_crs(4326)
 
 firs_sf <- dplyr::bind_rows(list(grand_fir, white_fir,subalpine_fir,pacific_silver,
                                  red_fir))
@@ -72,7 +87,7 @@ douglas_fir2 <- douglas_fir %>% filter(CODE == 1) %>% dplyr::select(geometry,gen
 
 tree_data = rbind(douglas_fir2, diss)
 
-tree_data <- tree_data %>% sf::st_set_crs(4326)
+#tree_data <- tree_data %>% sf::st_set_crs(4326)
 tree_data$genus <- factor(tree_data$genus,levels = c('Abies spp.','Douglas-fir'))
 
 pdf("figures/tree_distributions.pdf",height = 10, width = 15)
@@ -140,36 +155,39 @@ get_x <- function(y){
 
 llround2 <- llround2 %>% mutate(radius = get_x(total))
 
-
-llround2 <- llround2 %>% mutate(nudge = case_when(total <= 2 ~ 0.25,
-                                                  total >2 & total <= 10 ~ 0.325,
+llround2 <- llround2 %>% mutate(nudge = case_when(total <= 2 ~ 0.275,
+                                                  total >2 & total <= 10 ~ 0.35,
                                                   total >10 & total <= 50 ~ 0.5,
                                                   total >50 & total <= 160 ~ 0.6,
                                                   total >60 & total <= 400 ~ 0.75,
                                                   total >400 ~ 0.85))
 
+mapcols = c("#275D3C", "#CAB462")
+
 plt1 <- ggplot() + geom_sf(data = tree_data, aes(fill = genus, color = genus,alpha = genus)) +
-  scale_fill_manual(name="", values = mapcols) +
-  scale_color_manual(name="", values = mapcols) +
-  scale_alpha_manual(name = "",values = c("Abies spp." = 0.7,'Douglas-fir' = 0.8)) +
+  scale_fill_manual(name="", values = mapcols,labels = c(expression(italic("Abies spp.")), 'Douglas-fir')) +
+  scale_color_manual(name="", values = mapcols,labels = c(expression(italic("Abies spp.")), 'Douglas-fir')) +
+  scale_alpha_manual(name = "",values = c("Abies spp." = 0.7,'Douglas-fir' = 0.8),
+                     labels = c(expression(italic("Abies spp.")), 'Douglas-fir')) +
   geom_sf(data = state_data, aes(geometry = geometry), color = "black", fill = NA) + 
   geom_sf(data = bc_data, aes(geometry = geometry), color = "black", fill = NA) +
-  theme_classic() +
-  theme(axis.title = element_blank(),
-        axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.line = element_blank(),
+  theme_classic(base_size = 20) +
+  theme(#axis.title = element_blank(),
+  #      axis.text = element_blank(),
+        #axis.ticks = element_blank(),
+        #axis.line = element_blank(),
         legend.key = element_rect(color = 'transparent', fill = 'transparent'))  +
-  labs(y = "Latitude", x = "") +
-  coord_sf(ylim = c(31.5,51),xlim = c(-123.5,-105.0)) 
+  labs(y = "Latitude", x = "Longitude")  +
+  coord_sf(ylim = c(34,51),xlim = c(-124,-104.9)) 
 
-pdf("figures/morph_dist_map.pdf",height = 10,width = 14)
+
+pdf("figures/morph_dist_map.pdf",height = 12,width = 16)
 plt1 + new_scale_fill() + 
   geom_scatterpie(data = llround2, aes(x = lon_cent, y = lat_cent, r = radius),
                   cols = c('Single-capsid morphotype','Multi-capsid morphotype'), color = 'white', alpha = 1) + 
   scale_fill_manual("", values = c("Single-capsid morphotype" = "#ee8800", "Multi-capsid morphotype" = '#5D65C5')) + 
-  geom_scatterpie_legend(breaks = c(get_x(1), get_x(10), get_x(100),get_x(500)), 
-                         x = -123, y = 35, labeller = function(x) exp((x - 0.1)*20)) + 
-  geom_text(data = llround2, aes(x = lon_cent + nudge, y = lat_cent, label = total), color = 'grey5', size = 3.5) 
+  geom_scatterpie_legend(breaks = c(get_x(1), get_x(10), get_x(100),get_x(550)), 
+                         x = -123, y = 34, labeller = function(x) exp((x - 0.1)*20), label_position = 'right') + 
+  geom_text(data = llround2, aes(x = lon_cent + nudge, y = lat_cent, label = total), color = 'grey5', size = 5)
 dev.off()
 
