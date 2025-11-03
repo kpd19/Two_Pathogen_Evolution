@@ -1,0 +1,176 @@
+pdoug,thresh,biocontrol,type,mean_applications
+18,0.2,1,100% multi-capsid morphotype,36.75
+18,0.2,5,100% multi-capsid morphotype,37.4
+18,0.2,10,100% multi-capsid morphotype,39.3
+18,0.2,50,100% multi-capsid morphotype,38.35
+18,0.2,100,100% multi-capsid morphotype,39.05
+18,0.2,150,100% multi-capsid morphotype,39.1
+18,0.2,200,100% multi-capsid morphotype,40.5
+18,0.5,1,100% multi-capsid morphotype,29.85
+18,0.5,5,100% multi-capsid morphotype,32.25
+18,0.5,10,100% multi-capsid morphotype,31.85
+18,0.5,50,100% multi-capsid morphotype,33.15
+18,0.5,100,100% multi-capsid morphotype,34.05
+18,0.5,150,100% multi-capsid morphotype,34.35
+18,0.5,200,100% multi-capsid morphotype,33.8
+18,1,1,100% multi-capsid morphotype,25.75
+18,1,5,100% multi-capsid morphotype,26
+18,1,10,100% multi-capsid morphotype,26.95
+18,1,50,100% multi-capsid morphotype,27.6
+18,1,100,100% multi-capsid morphotype,27.65
+18,1,150,100% multi-capsid morphotype,27.45
+18,1,200,100% multi-capsid morphotype,27.35
+18,1.5,1,100% multi-capsid morphotype,23.45
+18,1.5,5,100% multi-capsid morphotype,23.9
+18,1.5,10,100% multi-capsid morphotype,23.95
+18,1.5,50,100% multi-capsid morphotype,23.75
+18,1.5,100,100% multi-capsid morphotype,23.95
+18,1.5,150,100% multi-capsid morphotype,24.75
+18,1.5,200,100% multi-capsid morphotype,23.45
+18,2,1,100% multi-capsid morphotype,21.95
+18,2,5,100% multi-capsid morphotype,21.8
+18,2,10,100% multi-capsid morphotype,21.85
+18,2,50,100% multi-capsid morphotype,21.5
+18,2,100,100% multi-capsid morphotype,22.05
+18,2,150,100% multi-capsid morphotype,21.7
+18,2,200,100% multi-capsid morphotype,21.45
+18,0.2,1,100% single-capsid morphotype,45.55
+18,0.2,5,100% single-capsid morphotype,50.05
+18,0.2,10,100% single-capsid morphotype,46.35
+18,0.2,50,100% single-capsid morphotype,32.95
+18,0.2,100,100% single-capsid morphotype,27.95
+18,0.2,150,100% single-capsid morphotype,24.85
+18,0.2,200,100% single-capsid morphotype,23.1
+18,0.5,1,100% single-capsid morphotype,39.25
+18,0.5,5,100% single-capsid morphotype,43.1
+18,0.5,10,100% single-capsid morphotype,37.55
+18,0.5,50,100% single-capsid morphotype,24.15
+18,0.5,100,100% single-capsid morphotype,21.45
+18,0.5,150,100% single-capsid morphotype,20.2
+18,0.5,200,100% single-capsid morphotype,18.3
+18,1,1,100% single-capsid morphotype,29.9
+18,1,5,100% single-capsid morphotype,30.45
+18,1,10,100% single-capsid morphotype,26.9
+18,1,50,100% single-capsid morphotype,19.95
+18,1,100,100% single-capsid morphotype,17.85
+18,1,150,100% single-capsid morphotype,16.75
+18,1,200,100% single-capsid morphotype,15.6
+18,1.5,1,100% single-capsid morphotype,25.8
+18,1.5,5,100% single-capsid morphotype,23.05
+18,1.5,10,100% single-capsid morphotype,22
+18,1.5,50,100% single-capsid morphotype,17.6
+18,1.5,100,100% single-capsid morphotype,16.55
+18,1.5,150,100% single-capsid morphotype,15.45
+18,1.5,200,100% single-capsid morphotype,14.75
+18,2,1,100% single-capsid morphotype,22.05
+18,2,5,100% single-capsid morphotype,21
+18,2,10,100% single-capsid morphotype,18.7
+18,2,50,100% single-capsid morphotype,15.6
+18,2,100,100% single-capsid morphotype,15.35
+18,2,150,100% single-capsid morphotype,15
+18,2,200,100% single-capsid morphotype,14.65
+18,0.2,1,"50% multi-capsid, 50% single-capsid",43.2
+18,0.2,5,"50% multi-capsid, 50% single-capsid",49.85
+18,0.2,10,"50% multi-capsid, 50% single-capsid",47.8
+18,0.2,50,"50% multi-capsid, 50% single-capsid",32.2
+18,0.2,100,"50% multi-capsid, 50% single-capsid",25.85
+18,0.2,150,"50% multi-capsid, 50% single-capsid",22.5
+18,0.2,200,"50% multi-capsid, 50% single-capsid",21.5
+18,0.5,1,"50% multi-capsid, 50% single-capsid",36.3
+18,0.5,5,"50% multi-capsid, 50% single-capsid",42.55
+18,0.5,10,"50% multi-capsid, 50% single-capsid",41.75
+18,0.5,50,"50% multi-capsid, 50% single-capsid",25.4
+18,0.5,100,"50% multi-capsid, 50% single-capsid",21.4
+18,0.5,150,"50% multi-capsid, 50% single-capsid",19.8
+18,0.5,200,"50% multi-capsid, 50% single-capsid",18.8
+18,1,1,"50% multi-capsid, 50% single-capsid",28.95
+18,1,5,"50% multi-capsid, 50% single-capsid",32.05
+18,1,10,"50% multi-capsid, 50% single-capsid",28.05
+18,1,50,"50% multi-capsid, 50% single-capsid",20.25
+18,1,100,"50% multi-capsid, 50% single-capsid",18.2
+18,1,150,"50% multi-capsid, 50% single-capsid",18.05
+18,1,200,"50% multi-capsid, 50% single-capsid",17.45
+18,1.5,1,"50% multi-capsid, 50% single-capsid",24.35
+18,1.5,5,"50% multi-capsid, 50% single-capsid",24.2
+18,1.5,10,"50% multi-capsid, 50% single-capsid",21.5
+18,1.5,50,"50% multi-capsid, 50% single-capsid",18.05
+18,1.5,100,"50% multi-capsid, 50% single-capsid",17.6
+18,1.5,150,"50% multi-capsid, 50% single-capsid",16.6
+18,1.5,200,"50% multi-capsid, 50% single-capsid",16.35
+18,2,1,"50% multi-capsid, 50% single-capsid",21.45
+18,2,5,"50% multi-capsid, 50% single-capsid",21.25
+18,2,10,"50% multi-capsid, 50% single-capsid",20.15
+18,2,50,"50% multi-capsid, 50% single-capsid",16.8
+18,2,100,"50% multi-capsid, 50% single-capsid",16.55
+18,2,150,"50% multi-capsid, 50% single-capsid",15.6
+18,2,200,"50% multi-capsid, 50% single-capsid",15.85
+18,0.2,1,"25% multi-capsid, 75% single-capsid",45.75
+18,0.2,5,"25% multi-capsid, 75% single-capsid",49.65
+18,0.2,10,"25% multi-capsid, 75% single-capsid",47.1
+18,0.2,50,"25% multi-capsid, 75% single-capsid",27.7
+18,0.2,100,"25% multi-capsid, 75% single-capsid",22.2
+18,0.2,150,"25% multi-capsid, 75% single-capsid",20.75
+18,0.2,200,"25% multi-capsid, 75% single-capsid",19.7
+18,0.5,1,"25% multi-capsid, 75% single-capsid",39.05
+18,0.5,5,"25% multi-capsid, 75% single-capsid",42.4
+18,0.5,10,"25% multi-capsid, 75% single-capsid",39.3
+18,0.5,50,"25% multi-capsid, 75% single-capsid",23.2
+18,0.5,100,"25% multi-capsid, 75% single-capsid",19.9
+18,0.5,150,"25% multi-capsid, 75% single-capsid",18.6
+18,0.5,200,"25% multi-capsid, 75% single-capsid",16.9
+18,1,1,"25% multi-capsid, 75% single-capsid",28.95
+18,1,5,"25% multi-capsid, 75% single-capsid",29.1
+18,1,10,"25% multi-capsid, 75% single-capsid",25.65
+18,1,50,"25% multi-capsid, 75% single-capsid",18.9
+18,1,100,"25% multi-capsid, 75% single-capsid",17.45
+18,1,150,"25% multi-capsid, 75% single-capsid",16.4
+18,1,200,"25% multi-capsid, 75% single-capsid",16.05
+18,1.5,1,"25% multi-capsid, 75% single-capsid",25.35
+18,1.5,5,"25% multi-capsid, 75% single-capsid",23.95
+18,1.5,10,"25% multi-capsid, 75% single-capsid",21.05
+18,1.5,50,"25% multi-capsid, 75% single-capsid",17.25
+18,1.5,100,"25% multi-capsid, 75% single-capsid",16.45
+18,1.5,150,"25% multi-capsid, 75% single-capsid",16.2
+18,1.5,200,"25% multi-capsid, 75% single-capsid",15.8
+18,2,1,"25% multi-capsid, 75% single-capsid",22.65
+18,2,5,"25% multi-capsid, 75% single-capsid",19.95
+18,2,10,"25% multi-capsid, 75% single-capsid",17.9
+18,2,50,"25% multi-capsid, 75% single-capsid",16.65
+18,2,100,"25% multi-capsid, 75% single-capsid",15.85
+18,2,150,"25% multi-capsid, 75% single-capsid",15.35
+18,2,200,"25% multi-capsid, 75% single-capsid",15.25
+18,0.2,1,"75% multi-capsid, 25% single-capsid",42
+18,0.2,5,"75% multi-capsid, 25% single-capsid",47.1
+18,0.2,10,"75% multi-capsid, 25% single-capsid",49.65
+18,0.2,50,"75% multi-capsid, 25% single-capsid",42
+18,0.2,100,"75% multi-capsid, 25% single-capsid",31.65
+18,0.2,150,"75% multi-capsid, 25% single-capsid",27.95
+18,0.2,200,"75% multi-capsid, 25% single-capsid",25.9
+18,0.5,1,"75% multi-capsid, 25% single-capsid",33.25
+18,0.5,5,"75% multi-capsid, 25% single-capsid",40.15
+18,0.5,10,"75% multi-capsid, 25% single-capsid",41.95
+18,0.5,50,"75% multi-capsid, 25% single-capsid",31.05
+18,0.5,100,"75% multi-capsid, 25% single-capsid",25.2
+18,0.5,150,"75% multi-capsid, 25% single-capsid",22.85
+18,0.5,200,"75% multi-capsid, 25% single-capsid",22.1
+18,1,1,"75% multi-capsid, 25% single-capsid",27.3
+18,1,5,"75% multi-capsid, 25% single-capsid",29.25
+18,1,10,"75% multi-capsid, 25% single-capsid",29.15
+18,1,50,"75% multi-capsid, 25% single-capsid",22
+18,1,100,"75% multi-capsid, 25% single-capsid",20.5
+18,1,150,"75% multi-capsid, 25% single-capsid",19.25
+18,1,200,"75% multi-capsid, 25% single-capsid",18.5
+18,1.5,1,"75% multi-capsid, 25% single-capsid",24.35
+18,1.5,5,"75% multi-capsid, 25% single-capsid",24.65
+18,1.5,10,"75% multi-capsid, 25% single-capsid",25.25
+18,1.5,50,"75% multi-capsid, 25% single-capsid",19.15
+18,1.5,100,"75% multi-capsid, 25% single-capsid",18.25
+18,1.5,150,"75% multi-capsid, 25% single-capsid",17.45
+18,1.5,200,"75% multi-capsid, 25% single-capsid",16.95
+18,2,1,"75% multi-capsid, 25% single-capsid",21.25
+18,2,5,"75% multi-capsid, 25% single-capsid",21
+18,2,10,"75% multi-capsid, 25% single-capsid",21.4
+18,2,50,"75% multi-capsid, 25% single-capsid",17.1
+18,2,100,"75% multi-capsid, 25% single-capsid",16.9
+18,2,150,"75% multi-capsid, 25% single-capsid",16.35
+18,2,200,"75% multi-capsid, 25% single-capsid",16.65
