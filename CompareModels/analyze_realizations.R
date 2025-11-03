@@ -32,9 +32,9 @@ t5_stoch %>% filter(type == "best") %>%
 
 tried_t5s <- t5_stoch %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
 
-write_csv(tried_t5s,"best/t5s_t30_tried_fix2.csv")
+write_csv(tried_t5s,"best/t5s_t30.csv")
 
-tried_t5s <- read_csv("best/t5s_t30_tried_fix2.csv")
+tried_t5s <- read_csv("best/t5s_t30.csv")
 
 # Files are quite large, available on request
 df_low <- read_csv("stoch/t5s_fix2_lowstoch_tried1.csv")
@@ -155,8 +155,8 @@ nt4_stoch %>% filter(type == "best") %>%
   xlab("Iteration") + ylab("Best likelihood tried")
 
 tried_nt4s <- nt4_stoch %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
-write_csv(tried_nt4s,"best/nt4s_t30_tried_fix2.csv")
-tried_nt4s <- read_csv("best/nt4s_t30_tried_fix2.csv")
+write_csv(tried_nt4s,"best/nt4s_t30.csv")
+tried_nt4s <- read_csv("best/nt4s_t30.csv")
 
 # Files are quite large, available on request
 df_low <- read_csv("stoch/nt4s_fix2_lowstoch_tried1.csv")
@@ -289,8 +289,8 @@ t6_stoch %>% filter(type == "best") %>%
   xlab("Iteration") + ylab("Best likelihood tried")
 
 tried_t6s <- t6_stoch %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
-write_csv(tried_t6s,"best/t6s_t30_tried_fix2.csv")
-tried_t6s <- read_csv("best/t6s_t30_tried_fix2.csv")
+write_csv(tried_t6s,"best/t6s_t30.csv")
+tried_t6s <- read_csv("best/t6s_t30.csv")
 
 # Files are quite large, available on request
 df_low <- read_csv("stoch/t6s_fix2_lowstoch_tried1.csv")
@@ -406,8 +406,6 @@ best_t4s <- t4_stoch %>% filter(type =="best") %>%
   group_by(round) %>% filter(iter == max(iter)) %>% arrange(desc(ll)) %>% 
   select(ll,sS,sM,phi,rho,round) %>% head(30)
 
-write_csv(best_t4s,"best/t4s_t30_best_fix2.csv")
-
 t4_stoch %>% filter(type == "best") %>% 
   ggplot() + aes(x = iter, y = ll, color = round, group = round) +
   geom_line() + theme_classic() + 
@@ -416,8 +414,8 @@ t4_stoch %>% filter(type == "best") %>%
   xlab("Iteration") + ylab("Best likelihood tried")
 
 tried_t4s <- t4_stoch %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
-write_csv(tried_t4s,"best/t4s_t30_tried_fix2.csv")
-tried_t4s <- read_csv("best/t4s_t30_tried_fix2.csv")
+write_csv(tried_t4s,"best/t4s_t30.csv")
+tried_t4s <- read_csv("best/t4s_t30.csv")
 
 # Files are quite large, available on request
 df_low <- read_csv("stoch/t4s_fix2_lowstoch.csv")
@@ -534,8 +532,6 @@ best_ht6s <- ht6_stoch %>% filter(type =="best") %>%
   group_by(round) %>% filter(iter == max(iter)) %>% arrange(desc(ll)) %>% 
   select(ll,sS_DO,sS_GR,sM_DO,sM_GR,phi,rho,round) %>% head(30)
 
-write_csv(best_ht6s,"best/ht6s_t30_best_fix2.csv")
-
 ht6_stoch %>% filter(type == "best") %>% 
   ggplot() + aes(x = iter, y = ll, color = round, group = round) +
   geom_line() + theme_classic() + 
@@ -544,8 +540,8 @@ ht6_stoch %>% filter(type == "best") %>%
   xlab("Iteration") + ylab("Best likelihood tried")
 
 tried_ht6s <- ht6_stoch %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
-write_csv(tried_ht6s,"best/ht6s_t30_tried_fix2.csv")
-tried_ht6s <- read_csv("best/ht6s_t30_tried_fix2.csv")
+write_csv(tried_ht6s,"best/ht6s_t30.csv")
+tried_ht6s <- read_csv("best/ht6s_t30.csv")
 
 # Files are quite large, available on request
 df_low <- read_csv("stoch/ht6s_fix2_lowstoch.csv")
