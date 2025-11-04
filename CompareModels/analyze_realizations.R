@@ -645,3 +645,127 @@ pmnpv <- merge(pmnpv,ht6s_pset_info)
 
 write_csv(pmnpv,"data/pmnpv_ht6s_fix2noext.csv")
 #pmnpv <- read_csv("data/pmnpv_t6s_fix2noext.csv")
+
+
+###################
+###################
+# T4 NO EVOLUTION
+###################
+###################
+
+
+t4s_noevo <- read_csv("linesearch/t4sne_linesearch.csv")
+
+tried_t4s <- t4s_noevo %>% filter(type == 'tried') %>% arrange(desc(ll)) %>% head(30)
+write_csv(tried_t4s,"best/t4s_noevo_t30.csv")
+
+# Files are quite large, available on request
+df_low <- read_csv("data/t4s_noevo_lowstoch.csv")
+df_no <- read_csv("data/t4s_noevo_nostoch.csv")
+df_high <- read_csv("data/t4s_noevo_stoch.csv")
+df_higher <- read_csv("data/t4s_noevo_high.csv")
+df_mid1 <- read_csv("data/t4s_noevo_mid1.csv")
+df_mid2 <- read_csv("data/t4s_noevo_mid2.csv")
+df_higher2 <- read_csv("data/t4s_noevo_higher.csv")
+
+ll_low <- df_low %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_no <- df_no %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_stoch <- df_high %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_higher <- df_higher %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_mid1 <- df_mid1 %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_mid2 <- df_mid2 %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+ll_higher2 <- df_higher2 %>% group_by(id,phiS,phiM,lambda,rho,sigma) %>% 
+  summarize(meanL = mean(LL,na.rm=TRUE)) %>%
+  group_by(phiS,phiM,lambda,rho,sigma) %>%
+  summarize(ll = sum(log(meanL))) %>% arrange(desc(ll))
+
+t4s_all <- rbind(ll_no, ll_low, ll_stoch, ll_higher, ll_mid1,ll_mid2,ll_higher2)
+
+t4s_all <- merge(t4s_all,tried_t4s_info)
+
+t4s_all <- t4s_all %>% arrange(desc(ll))
+
+write_csv(t4s_all, "data/t4s_noevo_stoch_all.csv")
+
+q1 <- 0.025
+q2 <- 0.975
+
+pmnpv0 <- df_no %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv005<- df_low %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv05 <- df_high %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE ),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv025 <- df_mid1 %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE ),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv075 <- df_mid2 %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE ),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv1 <- df_higher %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE ),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv125 <- df_higher2 %>% filter(id %in% id_noext) %>%
+  group_by(pdoug,phiS,phiM,rho,lambda,sigma) %>% 
+  summarize(mean_MNPV = mean(mean_pMNPV,na.rm=TRUE),
+            sd = sd(mean_pMNPV,na.rm=TRUE),
+            q1 = quantile(mean_pMNPV, probs = c(q1), na.rm=TRUE ),
+            q9 = quantile(mean_pMNPV, probs = c(q2), na.rm=TRUE))
+
+pmnpv <- rbind(pmnpv0,pmnpv005,pmnpv05,pmnpv025,pmnpv075,pmnpv1,pmnpv125)
+
+
+pmnpv <- merge(pmnpv,tried_t4s_info)
+
+write_csv(pmnpv,"data/pmnpv_t4s_noevo.csv")
