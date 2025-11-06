@@ -195,11 +195,14 @@ pd_long <- pd_data %>% pivot_longer(colnames(pd_data)[11:38])
 
 pd_long <- merge(pd_long,tree_sp)
 
+pd_long <- pd_long %>% mutate(genus2 = ifelse(genus == 'Misc. gymnosperms', "Misc. gymnosperms", paste0("*",genus,"*")))
+
 pdf("MorphotypeFrequency/figures/dist_tree_sp_by_sp.pdf",height = 10, width = 10)
-pd_long %>% ggplot() + aes(x = site_no, y = value, fill = genus) + geom_bar(stat = 'identity', position = 'stack') + 
+pd_long %>% ggplot() + aes(x = site_no, y = value, fill = genus2) + geom_bar(stat = 'identity', position = 'stack') + 
   theme_classic(base_size = 9) + 
   facet_wrap(~name,nrow = 7) + 
-  theme(legend.position = 'top') + 
+  theme(legend.position = 'top',
+        legend.text = element_markdown()) + 
   scale_fill_discrete("") + 
   ylab("% of tree species") + xlab("Site no.")
 dev.off()
@@ -211,11 +214,14 @@ prop_dataset <- prop_dataset %>%
 
 prop_dataset$name <- factor(prop_dataset$name, levels = prop_dataset$name)
 
+prop_dataset <- prop_dataset %>% mutate(genus2 = ifelse(genus == 'Misc. gymnosperms', "Misc. gymnosperms", paste0("*",genus,"*")))
+
 pdf("MorphotypeFrequency/figures/tree_prop.pdf")
-prop_dataset %>% ggplot() + aes(x = name, y = mean_p*100, fill = genus) + geom_bar(stat = 'identity') + 
+prop_dataset %>% ggplot() + aes(x = name, y = mean_p*100, fill = genus2) + geom_bar(stat = 'identity') + 
   theme_classic() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
   ylab("% of total dataset") + xlab("") + 
-  theme(legend.position = 'top') +
+  theme(legend.position = 'top',
+        legend.text = element_markdown()) +
   scale_fill_discrete("")
 dev.off()
