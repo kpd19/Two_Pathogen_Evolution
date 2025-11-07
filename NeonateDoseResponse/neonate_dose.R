@@ -1,6 +1,5 @@
 library('tidyverse')
 library('gridExtra')
-library('zoo')
 
 dose_2020_wide <- read.csv("Dose/data/dose_response_2020_wide.csv")
 dose_2021_wide <- read_csv('Dose/data/dose_response_2021_wide.csv')
