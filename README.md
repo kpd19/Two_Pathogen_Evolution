@@ -1,6 +1,6 @@
 ## Summary
 
-This library contains code used in the manuscript titled Synthesizing Selection-Mosaic Theory and Host-Pathogen Theory to Explain Large-Scale Pathogen Coexistence in an Insect-Virus System. This paper uses data collected from field experiments and observational studies to explore the mechanisms supporting the coexistence of two viral morphotypes across populations of the Douglas-fir tussock moth. The model and analysis are implemented in R and Julia. 
+This library contains code used in the manuscript titled Synthesizing Selection Mosaic Theory and Host-Pathogen Theory to Explain Large-Scale Pathogen Coexistence. This paper uses data collected from field experiments and observational studies to explore the mechanisms supporting the coexistence of two viral morphotypes across populations of the Douglas-fir tussock moth. The model and analysis are implemented in R and Julia. 
 
 ## Requirements and Setup
 
@@ -21,6 +21,8 @@ The script `thinned_posterior.R` draws 225 parameter sets from the posterior dis
 In the `MorphotypeFrequency` directory, the spatial dataset on morphotype frequency data from the literature and our field collections was combined in the `aggregating_morphotype_data.R` script in R. We tabulated the total number of isolates identified as the multi-capsid morphotype or the single-capsid morphotype as a result of our PCR analyses. The code includes analysis of coinfections. ${\color{DarkOrchid}{\textbf{Table S3 in SI, Figure S1, S2, S3, and S4 in SI}}}$
 
 To calculate the percent of the forest that was made up of each tree species, we used the National Forest Type Dataset credated by the Forest Service Inventory and Analysis (FIA) program. The raster data can be downloaded [here](https://data.fs.usda.gov/geodata/rastergateway/forest_type/). In the script `forest_composition.R`, for the United States sites, we calculated the percent of each tree species in a 5 kilometer radius around each field site. For sites that had no trees identified in the FIA dataset, we extended the radius to 10 kilometers. The script then bins the percent that is composed of Douglas-fir to the size of spatial grid used in our mechanistic model, which has 37 patches.
+
+The script `ConceptualMNPV.R` plots the morphotype frequency binned by percent Douglas-fir for the conceptual graphs in  ${\color{DarkOrchid}{\textbf{Figure 1}}}$ .
 
 The script `morph_douglas_glm.R` compares a generalized linear model there the percent of the multi-capsid morphotype is a function of percent Douglas-fir at each site to a model where there is no relationship to forest composition using AIC analysis. ${\color{DarkOrchid}{\textbf{Figure S6 in SI}}}$ 
 
@@ -48,7 +50,7 @@ The script `vary_phi.R` plots the dynamics and variation in morphotype frequency
 
 ## Biocontrol
 
-The `Biocontrol` directory contains scripts to analyze the effects of using virus as a biocontrol on host population and transmission risk. The script biocontrol.jl creates simulations for a range of biocontrol levels at different probabilities of spraying and thresholds for cases with varying amounts of each morphotype as biocontrol. The script `threshold_and_amount.R` analyzes the different levels of biopesticide applied and host density thresholds that trigger a spray. The script `biocontrol_comparison.R`  . The script `biocontrol_freq.R` analzes the effects on transmission risk and host population sizes when the likelihood of spraying is varied. ${\color{DarkOrchid}{\textbf{Figure 6 in main text, Figures S20, S21, and S22 in SI}}}$
+The `Biocontrol` directory contains scripts to analyze the effects of using virus as a biopesticide on host population and transmission risk. The script biocontrol.jl creates simulations for a range of biopesticide levels at different probabilities of spraying and thresholds for cases with varying ratios of each morphotype. The script `threshold_and_amount.R` analyzes the different levels of biopesticide applied and host density thresholds that trigger a spray. The script `biocontrol_comparison.R`  . The script `biocontrol_freq.R` analzes the effects on transmission risk and host population sizes when the likelihood of spraying biopesticide is varied. ${\color{DarkOrchid}{\textbf{Figure 6 in main text, Figures S20, S21, and S22 in SI}}}$
 
 ## Host Mobility
 
@@ -57,5 +59,3 @@ To explore the effects of dispersal of first instars on the eco-evolutionary mod
 ## Generalist Predator
 
 The `GeneralistPredator` directory includes the script to run the model with the best parameter set with the inclusion of a generalist predator, `ode_rlzns_predator.jl`. The script `generalist_predators.R` analyzes the example simulation data for high and low attack rates and computes the % multi-capsid morphotype for varying rates of maximum fraction killed (a) and the hsot population density at which the fraction killed is maximized (&omega;). ${\color{DarkOrchid}{\textbf{Figure S19 in SI}}}$
-
-
